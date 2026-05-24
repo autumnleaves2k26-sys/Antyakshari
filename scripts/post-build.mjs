@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const srcDir = path.resolve('artifacts/antyakshari/dist/public');
-const destDir = path.resolve('public');
+const destDir = path.resolve('dist');
 
 function copyDir(src, dest) {
   fs.mkdirSync(dest, { recursive: true });
@@ -27,7 +27,7 @@ try {
       fs.rmSync(destDir, { recursive: true, force: true });
     }
     copyDir(srcDir, destDir);
-    console.log('Build output successfully copied to root public directory!');
+    console.log('Build output successfully copied to root dist directory!');
   } else {
     console.warn(`Source build directory ${srcDir} does not exist. Skipping copy.`);
   }
