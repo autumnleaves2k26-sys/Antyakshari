@@ -118,7 +118,7 @@ export default function AdminDashboard() {
       // 2. Draw QR code
       const qrImage = new Image();
       qrImage.crossOrigin = "anonymous";
-      qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(passId)}`;
+      qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrToken)}`;
       qrImage.onload = () => {
         // White card bg for QR
         const qrCardSize = W * 0.44;
@@ -343,10 +343,18 @@ export default function AdminDashboard() {
                                 <p className="text-[9px] uppercase font-bold tracking-widest text-slate-400">Pass Holders</p>
                                 <div className="space-y-1.5">
                                   {reg.participants.map((p) => (
-                                    <div key={p.id} className="flex items-center justify-between text-xs text-slate-700 bg-slate-50 border border-slate-200/60 px-3 py-1.5 rounded-lg gap-4">
-                                      <span className="font-medium truncate">{p.participantName}</span>
+                                    <div key={p.id} className="flex items-start justify-between text-xs text-slate-700 bg-slate-50 border border-slate-200/60 px-3 py-1.5 rounded-lg gap-4">
+                                      <div className="min-w-0 flex-1">
+                                        <span className="font-semibold text-slate-900 block truncate">{p.participantName}</span>
+                                        {(p.email || p.phone) && (
+                                          <div className="flex flex-col gap-0.5 mt-0.5 text-[10px] text-slate-500 font-mono">
+                                            {p.email && <span className="truncate">{p.email}</span>}
+                                            {p.phone && <span>{p.phone}</span>}
+                                          </div>
+                                        )}
+                                      </div>
                                       {p.passId ? (
-                                        <div className="flex items-center gap-2 flex-shrink-0">
+                                        <div className="flex items-center gap-2 flex-shrink-0 self-center">
                                           <span className="font-mono text-[10px] bg-slate-200 text-slate-800 border border-slate-300 px-1.5 py-0.5 rounded font-bold">{p.passId}</span>
                                           <button
                                             onClick={() => handleDownloadSinglePass(p.participantName, p.passId!, p.qrToken!)}
@@ -357,7 +365,7 @@ export default function AdminDashboard() {
                                           </button>
                                         </div>
                                       ) : (
-                                        <span className="text-[10px] text-slate-400 italic">No pass generated</span>
+                                        <span className="text-[10px] text-slate-400 italic self-center">No pass generated</span>
                                       )}
                                     </div>
                                   ))}

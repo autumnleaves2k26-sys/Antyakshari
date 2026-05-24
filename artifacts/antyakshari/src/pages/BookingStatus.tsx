@@ -124,7 +124,7 @@ export default function BookingStatus() {
               // 2. Draw QR code
               const qrImage = new Image();
               qrImage.crossOrigin = "anonymous";
-              qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(p.passId!)}`;
+              qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(p.qrToken!)}`;
               qrImage.onload = () => {
                 // White card bg for QR
                 const qrCardSize = W * 0.44;
@@ -221,7 +221,7 @@ export default function BookingStatus() {
                       {/* QR Code Container */}
                       <div className="p-3 bg-white rounded-2xl shadow-xl border border-white/20">
                         <img 
-                          src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${p.passId}`} 
+                          src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(p.qrToken!)}`} 
                           alt="QR Code" 
                           className="w-32 h-32 object-contain"
                         />
