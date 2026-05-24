@@ -36,3 +36,4 @@ externalPort = 3000
 [userenv.shared]
 ADMIN_PASSWORD = "antyakshari2026"
 ADMIN_TOKEN = "admin-secret-token-2026"
+SUPABASE_DATABASE_URL = "postgresql://postgres:shubham191162@db.jjxukcedpahluizzeyge.supabase.co:5432/postgres"
