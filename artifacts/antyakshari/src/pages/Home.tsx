@@ -1,37 +1,37 @@
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { MapPin, Clock, Music, Users, Sparkles, Zap, ChevronDown, Instagram, Twitter, Facebook } from "lucide-react";
+import { MapPin, Clock, Music, Users, Sparkles, Zap, ChevronDown, Instagram, Twitter, Facebook, ArrowRight, CheckCircle } from "lucide-react";
 import autumnLogo from "@assets/autumn_leaves_events_1779631833747.jpeg";
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 40 },
+  hidden: { opacity: 0, y: 24 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.7, delay: i * 0.12, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+    transition: { duration: 0.5, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
   }),
 };
 
 const highlights = [
   {
-    icon: <Music size={28} />,
+    icon: <Music size={22} />,
     title: "Live Music",
-    desc: "Soulful performances, impromptu jamming sessions, and pure musical energy that fills every corner.",
+    desc: "Soulful performances, impromptu jamming sessions, and pure musical energy.",
   },
   {
-    icon: <Zap size={28} />,
+    icon: <Zap size={22} />,
     title: "Crowd Energy",
-    desc: "Feel the pulse of a room full of music lovers — the kind of energy money can't recreate.",
+    desc: "Feel the pulse of a room full of music lovers — electric and unforgettable.",
   },
   {
-    icon: <Sparkles size={28} />,
+    icon: <Sparkles size={22} />,
     title: "Fun & Games",
-    desc: "Antyakshari battles, competitions, and spontaneous moments that become stories you tell for years.",
+    desc: "Antyakshari battles, competitions, and spontaneous moments worth remembering.",
   },
   {
-    icon: <Users size={28} />,
+    icon: <Users size={22} />,
     title: "Community",
-    desc: "Meet people who understand music the way you do. Leave with new friends and shared memories.",
+    desc: "Meet people who understand music the way you do. Leave with new friends.",
   },
 ];
 
@@ -47,29 +47,23 @@ const rules = [
 export default function Home() {
   return (
     <main className="min-h-screen bg-background">
-      {/* ─── HERO ─── */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden pt-16">
-        {/* Background glows */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-primary/10 blur-[140px]" />
-          <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] rounded-full bg-secondary/8 blur-[100px]" />
-          <div className="absolute inset-0 opacity-[0.025]"
-            style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")", backgroundRepeat: "repeat", backgroundSize: "200px" }} />
-        </div>
 
-        <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
-          <motion.p
+      {/* ─── HERO ─── */}
+      <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden pt-16 border-b border-border">
+        <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(to_bottom,transparent_60%,hsl(220,13%,96%))]" />
+
+        <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
+          <motion.div
             custom={0} variants={fadeUp} initial="hidden" animate="visible"
-            className="text-xs tracking-[0.3em] uppercase text-primary/80 font-semibold mb-6"
-            data-testid="hero-presented-by"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-white text-xs font-medium text-muted-foreground mb-8 shadow-xs"
           >
-            Autumn Leaves Events presents
-          </motion.p>
+            <img src={autumnLogo} alt="" className="h-4 w-4 rounded-full object-cover" />
+            Autumn Leaves Events Presents
+          </motion.div>
 
           <motion.h1
             custom={1} variants={fadeUp} initial="hidden" animate="visible"
-            className="font-serif text-[4.5rem] sm:text-[7rem] md:text-[9rem] lg:text-[11rem] font-black leading-none text-foreground mb-4 italic"
-            style={{ textShadow: "0 0 60px rgba(232,129,58,0.35)" }}
+            className="font-serif text-[4rem] sm:text-[6rem] md:text-[8rem] lg:text-[9.5rem] font-black leading-[0.9] text-foreground mb-6 italic tracking-tight"
             data-testid="hero-title"
           >
             Antyakshari
@@ -77,7 +71,7 @@ export default function Home() {
 
           <motion.p
             custom={2} variants={fadeUp} initial="hidden" animate="visible"
-            className="font-serif text-xl sm:text-2xl md:text-3xl text-secondary/90 italic mb-8"
+            className="font-serif text-xl sm:text-2xl text-muted-foreground italic mb-8"
             data-testid="hero-subtitle"
           >
             more than a jamming
@@ -85,210 +79,269 @@ export default function Home() {
 
           <motion.div
             custom={3} variants={fadeUp} initial="hidden" animate="visible"
-            className="flex items-center justify-center gap-3 mb-12"
+            className="flex items-center justify-center gap-6 mb-12 text-sm text-muted-foreground"
             data-testid="hero-date"
           >
-            <span className="h-px w-10 bg-primary/40" />
-            <span className="text-sm tracking-[0.25em] uppercase text-muted-foreground font-medium">
+            <span className="flex items-center gap-2">
+              <Clock size={15} className="text-primary" />
               31st May 2026
             </span>
-            <span className="h-px w-10 bg-primary/40" />
+            <span className="w-px h-4 bg-border" />
+            <span className="flex items-center gap-2">
+              <MapPin size={15} className="text-primary" />
+              Venue TBA
+            </span>
           </motion.div>
 
-          <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible">
+          <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible" className="flex items-center justify-center gap-3">
             <Link
               href="/register"
-              className="inline-block px-10 py-4 bg-primary text-primary-foreground font-semibold text-base rounded-full hover:scale-105 transition-transform duration-300"
-              style={{ boxShadow: "0 0 30px rgba(232,129,58,0.35)" }}
+              className="inline-flex items-center gap-2 px-7 py-3 bg-primary text-white font-semibold text-sm rounded-lg hover:bg-primary/90 transition-colors shadow-sm"
               data-testid="hero-cta"
             >
-              Register Now
+              Register Now <ArrowRight size={16} />
             </Link>
+            <a
+              href="#about"
+              className="inline-flex items-center gap-2 px-7 py-3 bg-white text-foreground font-semibold text-sm rounded-lg border border-border hover:bg-muted transition-colors shadow-xs"
+            >
+              Learn More
+            </a>
           </motion.div>
         </div>
 
-        {/* Scroll cue */}
         <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.5, duration: 1 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-muted-foreground/30 animate-bounce"
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2, duration: 1 }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-muted-foreground/40 animate-bounce"
         >
-          <ChevronDown size={24} />
+          <ChevronDown size={20} />
         </motion.div>
       </section>
 
       {/* ─── ABOUT ─── */}
-      <section className="py-24 px-4 max-w-4xl mx-auto text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }} transition={{ duration: 0.7 }}
-        >
-          <p className="text-xs tracking-[0.3em] uppercase text-primary/70 font-semibold mb-4">About the Event</p>
-          <h2 className="font-serif text-4xl sm:text-5xl font-bold text-foreground mb-8" data-testid="about-title">
-            Where Music Meets Memories
-          </h2>
-          <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-            Antyakshari is not just an event — it is a celebration of everything music means to us.
-            Born from the spirit of spontaneous singing and shared melodies, this gathering brings
-            together students, artists, and music lovers for an evening that transcends the ordinary.
-            Come sing, laugh, connect, and leave with a story worth telling.
-          </p>
-        </motion.div>
+      <section id="about" className="py-24 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }} transition={{ duration: 0.6 }}
+            >
+              <p className="text-xs font-semibold tracking-[0.2em] uppercase text-primary mb-4">About the Event</p>
+              <h2 className="font-serif text-4xl sm:text-5xl font-bold text-foreground mb-6 leading-tight" data-testid="about-title">
+                Where Music<br />Meets Memories
+              </h2>
+              <p className="text-muted-foreground leading-relaxed mb-4">
+                Antyakshari is not just an event — it is a celebration of everything music means to us.
+                Born from the spirit of spontaneous singing and shared melodies, this gathering brings
+                together students, artists, and music lovers for an evening that transcends the ordinary.
+              </p>
+              <p className="text-muted-foreground leading-relaxed">
+                Come sing, laugh, connect, and leave with a story worth telling.
+              </p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.15 }}
+              className="grid grid-cols-2 gap-4"
+            >
+              {[
+                { label: "31st May 2026", sub: "Event Date" },
+                { label: "₹199", sub: "Per Pass" },
+                { label: "6 PM", sub: "Doors Open" },
+                { label: "Live", sub: "Music & Games" },
+              ].map((stat) => (
+                <div key={stat.label} className="bg-white border border-border rounded-xl p-6 shadow-xs">
+                  <p className="font-serif text-3xl font-bold text-foreground mb-1">{stat.label}</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">{stat.sub}</p>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+        </div>
       </section>
 
       {/* ─── HIGHLIGHTS ─── */}
-      <section className="py-20 px-4 max-w-6xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }} transition={{ duration: 0.6 }}
-          className="text-center mb-14"
-        >
-          <p className="text-xs tracking-[0.3em] uppercase text-primary/70 font-semibold mb-3">What to Expect</p>
-          <h2 className="font-serif text-4xl sm:text-5xl font-bold text-foreground">Event Highlights</h2>
-        </motion.div>
+      <section className="py-20 px-6 bg-muted/40 border-y border-border">
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }} transition={{ duration: 0.5 }}
+            className="mb-12"
+          >
+            <p className="text-xs font-semibold tracking-[0.2em] uppercase text-primary mb-3">What to Expect</p>
+            <h2 className="font-serif text-4xl font-bold text-foreground">Event Highlights</h2>
+          </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {highlights.map((h, i) => (
-            <motion.div
-              key={h.title}
-              custom={i} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
-              className="rounded-2xl border border-border bg-card p-6 flex flex-col gap-4 hover:border-primary/30 transition-all duration-300"
-              data-testid={`highlight-card-${i}`}
-            >
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                {h.icon}
-              </div>
-              <h3 className="font-semibold text-foreground text-lg">{h.title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{h.desc}</p>
-            </motion.div>
-          ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {highlights.map((h, i) => (
+              <motion.div
+                key={h.title}
+                custom={i} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
+                className="bg-white rounded-xl border border-border p-6 shadow-xs hover:shadow-sm transition-shadow"
+                data-testid={`highlight-card-${i}`}
+              >
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-4">
+                  {h.icon}
+                </div>
+                <h3 className="font-semibold text-foreground text-base mb-2">{h.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{h.desc}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* ─── PRICING ─── */}
-      <section className="py-20 px-4 max-w-3xl mx-auto text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }} transition={{ duration: 0.7 }}
-          className="rounded-3xl border border-primary/20 bg-card p-10 sm:p-14"
-          data-testid="pricing-section"
-        >
-          <p className="text-xs tracking-[0.3em] uppercase text-primary/70 font-semibold mb-4">Passes & Pricing</p>
-          <h2 className="font-serif text-4xl sm:text-5xl font-bold text-foreground mb-6">Your Ticket In</h2>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-8">
-            <div className="flex flex-col items-center p-6 rounded-2xl bg-primary/10 border border-primary/20 min-w-[140px]">
-              <span className="text-4xl font-black text-primary font-serif">₹199</span>
-              <span className="text-xs text-muted-foreground mt-1 tracking-wide uppercase">Per Pass</span>
-            </div>
-            <div className="text-left max-w-xs">
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                Includes full access to the event, participation in Antyakshari rounds, live music, and an unforgettable evening.
-                Passes are issued on approval of payment.
-              </p>
-            </div>
-          </div>
-          <Link
-            href="/register"
-            className="inline-block px-8 py-3.5 bg-primary text-primary-foreground rounded-full font-semibold hover:opacity-90 transition-opacity"
-            data-testid="pricing-cta"
+      <section className="py-20 px-6">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }} transition={{ duration: 0.6 }}
+            data-testid="pricing-section"
           >
-            Book Your Pass
-          </Link>
-        </motion.div>
+            <p className="text-xs font-semibold tracking-[0.2em] uppercase text-primary mb-3">Passes & Pricing</p>
+            <h2 className="font-serif text-4xl font-bold text-foreground mb-10">Your Ticket In</h2>
+
+            <div className="bg-white border border-border rounded-2xl shadow-sm overflow-hidden">
+              <div className="grid grid-cols-1 md:grid-cols-2">
+                <div className="p-10 border-b md:border-b-0 md:border-r border-border">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider mb-3 font-medium">Standard Pass</p>
+                  <div className="flex items-baseline gap-1 mb-6">
+                    <span className="font-serif text-6xl font-black text-primary">₹199</span>
+                    <span className="text-muted-foreground text-sm">/ person</span>
+                  </div>
+                  <Link
+                    href="/register"
+                    className="inline-flex items-center gap-2 px-6 py-2.5 bg-primary text-white font-semibold text-sm rounded-lg hover:bg-primary/90 transition-colors"
+                    data-testid="pricing-cta"
+                  >
+                    Book Your Pass <ArrowRight size={15} />
+                  </Link>
+                </div>
+                <div className="p-10">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider mb-4 font-medium">Includes</p>
+                  <ul className="space-y-3">
+                    {[
+                      "Full event access",
+                      "Antyakshari competition entry",
+                      "Live music experience",
+                      "Digital pass on approval",
+                    ].map((item) => (
+                      <li key={item} className="flex items-center gap-3 text-sm text-foreground">
+                        <CheckCircle size={15} className="text-primary flex-shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </section>
 
       {/* ─── RULES ─── */}
-      <section className="py-20 px-4 max-w-3xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }} transition={{ duration: 0.6 }}
-          className="text-center mb-12"
-        >
-          <p className="text-xs tracking-[0.3em] uppercase text-primary/70 font-semibold mb-3">Guidelines</p>
-          <h2 className="font-serif text-4xl font-bold text-foreground">Event Rules</h2>
-        </motion.div>
-        <div className="space-y-4">
-          {rules.map((rule, i) => (
-            <motion.div
-              key={i}
-              custom={i} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
-              className="flex gap-4 items-start rounded-xl border border-border bg-card px-5 py-4"
-              data-testid={`rule-item-${i}`}
-            >
-              <span className="w-7 h-7 rounded-full bg-primary/15 text-primary text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
-                {i + 1}
-              </span>
-              <p className="text-sm text-muted-foreground leading-relaxed">{rule}</p>
-            </motion.div>
-          ))}
+      <section className="py-20 px-6 bg-muted/40 border-y border-border">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }} transition={{ duration: 0.5 }}
+            className="mb-10"
+          >
+            <p className="text-xs font-semibold tracking-[0.2em] uppercase text-primary mb-3">Guidelines</p>
+            <h2 className="font-serif text-4xl font-bold text-foreground">Event Rules</h2>
+          </motion.div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {rules.map((rule, i) => (
+              <motion.div
+                key={i}
+                custom={i} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
+                className="flex gap-4 items-start bg-white rounded-xl border border-border px-5 py-4 shadow-xs"
+                data-testid={`rule-item-${i}`}
+              >
+                <span className="w-6 h-6 rounded-full bg-primary text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+                  {i + 1}
+                </span>
+                <p className="text-sm text-muted-foreground leading-relaxed">{rule}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* ─── VENUE ─── */}
-      <section className="py-20 px-4 max-w-4xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }} transition={{ duration: 0.7 }}
-          className="rounded-3xl border border-secondary/20 bg-card p-10 sm:p-14 text-center"
-          data-testid="venue-section"
-        >
-          <p className="text-xs tracking-[0.3em] uppercase text-secondary/80 font-semibold mb-4">Venue & Timing</p>
-          <h2 className="font-serif text-4xl sm:text-5xl font-bold text-foreground mb-10">Mark Your Calendar</h2>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-10 sm:gap-16">
-            <div className="flex flex-col items-center gap-2">
-              <Clock size={24} className="text-secondary" />
-              <span className="text-xs text-muted-foreground uppercase tracking-wider">Date & Time</span>
-              <span className="font-semibold text-foreground">31st May 2026</span>
-              <span className="text-muted-foreground text-sm">6:00 PM onwards</span>
+      <section className="py-20 px-6">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }} transition={{ duration: 0.6 }}
+            data-testid="venue-section"
+          >
+            <p className="text-xs font-semibold tracking-[0.2em] uppercase text-primary mb-3">Logistics</p>
+            <h2 className="font-serif text-4xl font-bold text-foreground mb-10">Venue & Timing</h2>
+
+            <div className="bg-white border border-border rounded-2xl shadow-sm overflow-hidden">
+              <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-border">
+                <div className="p-10 flex flex-col gap-2">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-3">
+                    <Clock size={20} />
+                  </div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Date & Time</p>
+                  <p className="font-serif text-2xl font-bold text-foreground">31st May 2026</p>
+                  <p className="text-muted-foreground text-sm">6:00 PM onwards</p>
+                </div>
+                <div className="p-10 flex flex-col gap-2">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-3">
+                    <MapPin size={20} />
+                  </div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Venue</p>
+                  <p className="font-serif text-2xl font-bold text-foreground">To Be Announced</p>
+                  <p className="text-muted-foreground text-sm">Registered attendees will be notified</p>
+                </div>
+              </div>
             </div>
-            <div className="h-px sm:h-16 w-16 sm:w-px bg-border" />
-            <div className="flex flex-col items-center gap-2">
-              <MapPin size={24} className="text-secondary" />
-              <span className="text-xs text-muted-foreground uppercase tracking-wider">Venue</span>
-              <span className="font-semibold text-foreground">To Be Announced</span>
-              <span className="text-muted-foreground text-sm">Registered attendees will be notified</span>
-            </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
       </section>
 
       {/* ─── FINAL CTA ─── */}
-      <section className="py-28 px-4 text-center relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-primary/8 blur-[100px]" />
-        </div>
+      <section className="py-24 px-6 bg-foreground text-white">
         <motion.div
-          initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }} transition={{ duration: 0.8 }}
-          className="relative z-10 max-w-2xl mx-auto"
+          initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ duration: 0.6 }}
+          className="max-w-2xl mx-auto text-center"
         >
-          <h2 className="font-serif text-5xl sm:text-6xl font-bold text-foreground mb-6 italic" data-testid="final-cta-title">
+          <h2 className="font-serif text-4xl sm:text-5xl font-bold mb-4 italic" data-testid="final-cta-title">
             Don't miss a note.
           </h2>
-          <p className="text-muted-foreground text-lg mb-10">
+          <p className="text-white/60 mb-10 leading-relaxed">
             Seats are limited. Register today and secure your place at the most memorable evening of the year.
           </p>
           <Link
             href="/register"
-            className="inline-block px-12 py-4 bg-primary text-primary-foreground rounded-full font-bold text-lg hover:scale-105 transition-transform duration-300"
-            style={{ boxShadow: "0 0 30px rgba(232,129,58,0.35)" }}
+            className="inline-flex items-center gap-2 px-8 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 transition-colors"
             data-testid="final-cta-button"
           >
-            Register Now
+            Register Now <ArrowRight size={16} />
           </Link>
         </motion.div>
       </section>
 
       {/* ─── FOOTER ─── */}
-      <footer className="border-t border-border py-12 px-4">
-        <div className="max-w-5xl mx-auto flex flex-col items-center gap-5">
-          <img src={autumnLogo} alt="Autumn Leaves Events" className="h-12 w-auto rounded opacity-85" />
-          <p className="text-xs text-muted-foreground text-center tracking-wide">
-            © 2026 Autumn Leaves Events &nbsp;·&nbsp; We Plan Your Party
-          </p>
-          <div className="flex gap-5 text-muted-foreground">
-            <a href="#" aria-label="Instagram" className="hover:text-primary transition-colors" data-testid="footer-instagram"><Instagram size={18} /></a>
-            <a href="#" aria-label="Twitter" className="hover:text-primary transition-colors" data-testid="footer-twitter"><Twitter size={18} /></a>
-            <a href="#" aria-label="Facebook" className="hover:text-primary transition-colors" data-testid="footer-facebook"><Facebook size={18} /></a>
+      <footer className="border-t border-border py-10 px-6 bg-white">
+        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-5">
+          <div className="flex items-center gap-3">
+            <img src={autumnLogo} alt="Autumn Leaves Events" className="h-9 w-auto rounded object-contain" />
+            <div>
+              <p className="text-xs font-semibold text-foreground">Autumn Leaves Events</p>
+              <p className="text-xs text-muted-foreground">We Plan Your Party</p>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground">© 2026 Autumn Leaves Events. All rights reserved.</p>
+          <div className="flex gap-4 text-muted-foreground">
+            <a href="#" aria-label="Instagram" className="hover:text-primary transition-colors" data-testid="footer-instagram"><Instagram size={17} /></a>
+            <a href="#" aria-label="Twitter" className="hover:text-primary transition-colors" data-testid="footer-twitter"><Twitter size={17} /></a>
+            <a href="#" aria-label="Facebook" className="hover:text-primary transition-colors" data-testid="footer-facebook"><Facebook size={17} /></a>
           </div>
         </div>
       </footer>

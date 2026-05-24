@@ -10,6 +10,9 @@ import AdminLoginPage from "@/pages/AdminLogin";
 import AdminDashboardPage from "@/pages/AdminDashboard";
 import ScanPage from "@/pages/Scan";
 import NotFound from "@/pages/not-found";
+import { setAuthTokenGetter } from "@workspace/api-client-react";
+
+setAuthTokenGetter(() => localStorage.getItem("adminToken"));
 
 const queryClient = new QueryClient();
 
