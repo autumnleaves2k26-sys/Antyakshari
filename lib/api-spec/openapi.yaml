@@ -304,6 +304,10 @@ components:
           type: integer
         participantName:
           type: string
+        email:
+          type: ["string", "null"]
+        phone:
+          type: ["string", "null"]
         age:
           type: ["integer", "null"]
         collegeOrCompany:
@@ -339,21 +343,27 @@ components:
 
     ParticipantInput:
       type: object
-      required: [participantName]
+      required: [participantName, email, phone]
       properties:
         participantName:
           type: string
           minLength: 2
-        age:
-          type: ["integer", "null"]
-        collegeOrCompany:
-          type: ["string", "null"]
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          minLength: 10
 
     PaymentScreenshotInput:
       type: object
-      required: [screenshotUrl]
+      required: [screenshotFileName, screenshotMimeType, screenshotData]
       properties:
-        screenshotUrl:
+        screenshotFileName:
+          type: string
+        screenshotMimeType:
+          type: string
+        screenshotData:
           type: string
 
     AdminLoginInput:

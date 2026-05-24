@@ -1,4 +1,4 @@
-import { Switch, Route, Router as WouterRouter } from "wouter";
+import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -17,9 +17,12 @@ setAuthTokenGetter(() => localStorage.getItem("adminToken"));
 const queryClient = new QueryClient();
 
 function Router() {
+  const [location] = useLocation();
+  const showNavbar = location === "/" || location === "/register";
+
   return (
     <>
-      <Navbar />
+      {showNavbar && <Navbar />}
       <Switch>
         <Route path="/" component={HomePage} />
         <Route path="/register" component={RegisterPage} />

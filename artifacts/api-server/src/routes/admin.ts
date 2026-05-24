@@ -1,6 +1,4 @@
 import { Router, type IRouter } from "express";
-import { eq, count, sum, sql } from "drizzle-orm";
-import { db, registrationsTable, participantsTable } from "@workspace/db";
 import {
   AdminLoginBody,
   ListRegistrationsQueryParams,
@@ -13,6 +11,15 @@ import {
   GetAdminStatsResponse,
 } from "@workspace/api-zod";
 import { nanoid } from "../lib/nanoid";
+import {
+  listAllParticipants,
+  listRegistrations,
+  listParticipantsByRegistrationId,
+  mapParticipant,
+  mapRegistration,
+  updateParticipantById,
+  updateRegistrationStatusById,
+} from "../lib/supabase";
 
 const router: IRouter = Router();
 
@@ -57,23 +64,16 @@ router.get("/admin/registrations", async (req, res): Promise<void> => {
     return;
   }
 
-  let query = db.select().from(registrationsTable).$dynamic();
-  if (params.data.status) {
-    query = query.where(eq(registrationsTable.paymentStatus, params.data.status));
-  }
-
-  const registrations = await query.orderBy(registrationsTable.createdAt);
+  const registrations = await listRegistrations(params.data.status);
 
   const result = await Promise.all(
     registrations.map(async (reg) => {
-      const participants = await db
-        .select()
-        .from(participantsTable)
-        .where(eq(participantsTable.registrationId, reg.id));
+      const participants = await listParticipantsByRegistrationId(reg.id);
+      const mappedRegistration = mapRegistration(reg);
+      const mappedParticipants = participants.map(mapParticipant);
       return {
-        ...reg,
-        createdAt: reg.createdAt.toISOString(),
-        participants,
+        ...mappedRegistration,
+        participants: mappedParticipants,
       };
     })
   );
@@ -91,48 +91,43 @@ router.post("/admin/registrations/:id/approve", async (req, res): Promise<void> 
     return;
   }
 
-  const [registration] = await db
-    .update(registrationsTable)
-    .set({ paymentStatus: "approved" })
-    .where(eq(registrationsTable.id, params.data.id))
-    .returning();
+  const registration = await updateRegistrationStatusById(params.data.id, "approved");
 
   if (!registration) {
     res.status(404).json({ error: "Registration not found" });
     return;
   }
 
-  const participants = await db
-    .select()
-    .from(participantsTable)
-    .where(eq(participantsTable.registrationId, registration.id));
+  const participants = await listParticipantsByRegistrationId(registration.id);
 
   let passCounter = 1;
   const updatedParticipants = [];
 
   for (const participant of participants) {
-    if (!participant.passId) {
+    if (!participant.pass_id) {
       const passNum = String(passCounter++).padStart(3, "0");
       const passId = `ANT-2026-${passNum}-${nanoid(4)}`;
       const qrToken = nanoid(16).toLowerCase() + "-" + participant.id;
 
-      const [updated] = await db
-        .update(participantsTable)
-        .set({ passId, qrToken })
-        .where(eq(participantsTable.id, participant.id))
-        .returning();
+      const updated = await updateParticipantById(participant.id, { passId, qrToken });
 
-      updatedParticipants.push(updated);
+      if (!updated) {
+        res.status(500).json({ error: "Failed to generate pass" });
+        return;
+      }
+
+      updatedParticipants.push(mapParticipant(updated));
     } else {
-      updatedParticipants.push(participant);
+      updatedParticipants.push(mapParticipant(participant));
     }
   }
 
   req.log.info({ registrationId: registration.id }, "Registration approved, passes generated");
 
+  const mappedRegistration = mapRegistration(registration);
+
   res.json(ApproveRegistrationResponse.parse({
-    ...registration,
-    createdAt: registration.createdAt.toISOString(),
+    ...mappedRegistration,
     participants: updatedParticipants,
   }));
 });
@@ -147,61 +142,37 @@ router.post("/admin/registrations/:id/reject", async (req, res): Promise<void> =
     return;
   }
 
-  const [registration] = await db
-    .update(registrationsTable)
-    .set({ paymentStatus: "rejected" })
-    .where(eq(registrationsTable.id, params.data.id))
-    .returning();
+  const registration = await updateRegistrationStatusById(params.data.id, "rejected");
 
   if (!registration) {
     res.status(404).json({ error: "Registration not found" });
     return;
   }
 
-  res.json(RejectRegistrationResponse.parse({
-    ...registration,
-    createdAt: registration.createdAt.toISOString(),
-  }));
+  const mappedRegistration = mapRegistration(registration);
+  res.json(RejectRegistrationResponse.parse(mappedRegistration));
 });
 
 router.get("/admin/stats", async (req, res): Promise<void> => {
   if (!requireAdmin(req, res)) return;
 
-  const [totalResult] = await db
-    .select({ count: count() })
-    .from(registrationsTable);
+  const registrations = await listRegistrations();
+  const participants = await listAllParticipants();
 
-  const [pendingResult] = await db
-    .select({ count: count() })
-    .from(registrationsTable)
-    .where(eq(registrationsTable.paymentStatus, "pending"));
-
-  const [approvedResult] = await db
-    .select({ count: count() })
-    .from(registrationsTable)
-    .where(eq(registrationsTable.paymentStatus, "approved"));
-
-  const [rejectedResult] = await db
-    .select({ count: count() })
-    .from(registrationsTable)
-    .where(eq(registrationsTable.paymentStatus, "rejected"));
-
-  const [passesResult] = await db
-    .select({ total: sum(registrationsTable.totalPasses) })
-    .from(registrationsTable);
-
-  const [issuedResult] = await db
-    .select({ count: count() })
-    .from(participantsTable)
-    .where(sql`${participantsTable.passId} IS NOT NULL`);
+  const totalRegistrations = registrations.length;
+  const pendingRegistrations = registrations.filter((r) => r.payment_status === "pending").length;
+  const approvedRegistrations = registrations.filter((r) => r.payment_status === "approved").length;
+  const rejectedRegistrations = registrations.filter((r) => r.payment_status === "rejected").length;
+  const totalPasses = registrations.reduce((sum, r) => sum + Number(r.total_passes ?? 0), 0);
+  const totalPassesIssued = participants.filter((p) => Boolean(p.pass_id)).length;
 
   res.json(GetAdminStatsResponse.parse({
-    totalRegistrations: totalResult.count,
-    pendingRegistrations: pendingResult.count,
-    approvedRegistrations: approvedResult.count,
-    rejectedRegistrations: rejectedResult.count,
-    totalPasses: Number(passesResult.total ?? 0),
-    totalPassesIssued: issuedResult.count,
+    totalRegistrations,
+    pendingRegistrations,
+    approvedRegistrations,
+    rejectedRegistrations,
+    totalPasses,
+    totalPassesIssued,
   }));
 });
 

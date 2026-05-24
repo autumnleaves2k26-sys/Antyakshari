@@ -23,8 +23,8 @@ const step1Schema = z.object({
 const step2Schema = z.object({
   participants: z.array(z.object({
     participantName: z.string().min(2, "Name required"),
-    age: z.coerce.number().optional().or(z.literal('')),
-    collegeOrCompany: z.string().optional(),
+    email: z.string().email("Invalid email address"),
+    phone: z.string().min(10, "Phone must be at least 10 digits"),
   }))
 });
 
@@ -42,7 +42,8 @@ export default function Register() {
   const { toast } = useToast();
   const [step, setStep] = useState(1);
   const [bookingId, setBookingId] = useState<string | null>(null);
-  const [screenshotUrl, setScreenshotUrl] = useState("");
+  const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
+  const [screenshotPreview, setScreenshotPreview] = useState<string | null>(null);
 
   const createRegistration = useCreateRegistration();
   const uploadScreenshot = useUploadPaymentScreenshot();
@@ -57,7 +58,7 @@ export default function Register() {
   const form2 = useForm<Step2Values>({
     resolver: zodResolver(step2Schema),
     defaultValues: {
-      participants: [{ participantName: "", age: undefined, collegeOrCompany: "" }]
+      participants: [{ participantName: "", email: "", phone: "" }]
     }
   });
 
@@ -71,13 +72,33 @@ export default function Register() {
     if (additionalCount < 0) return;
     const current = form2.getValues().participants;
     if (current.length === additionalCount) return;
-    const blank = { participantName: "", age: undefined as undefined, collegeOrCompany: "" };
+    const blank = { participantName: "", email: "", phone: "" };
     if (additionalCount > current.length) {
       replace([...current, ...Array(additionalCount - current.length).fill(blank)]);
     } else {
       replace(current.slice(0, additionalCount));
     }
   }, [totalPasses]);
+
+  useEffect(() => {
+    if (!screenshotFile) {
+      setScreenshotPreview(null);
+      return;
+    }
+
+    const previewUrl = URL.createObjectURL(screenshotFile);
+    setScreenshotPreview(previewUrl);
+
+    return () => URL.revokeObjectURL(previewUrl);
+  }, [screenshotFile]);
+
+  const readFileAsDataUrl = (file: File) =>
+    new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result ?? ""));
+      reader.onerror = () => reject(new Error("Failed to read screenshot file."));
+      reader.readAsDataURL(file);
+    });
 
   const onStep1Submit = (data: Step1Values) => {
     if (data.totalPasses === 1) {
@@ -90,11 +111,11 @@ export default function Register() {
   const onStep2Submit = async (data: Step2Values) => {
     const step1Data = form1.getValues();
     const allParticipants = [
-      { participantName: step1Data.name, age: null, collegeOrCompany: null },
+      { participantName: step1Data.name, email: step1Data.email, phone: step1Data.phone },
       ...data.participants.map(p => ({
         participantName: p.participantName,
-        age: p.age === '' ? null : (p.age ? Number(p.age) : null),
-        collegeOrCompany: p.collegeOrCompany || null
+        email: p.email,
+        phone: p.phone
       }))
     ];
 
@@ -120,7 +141,7 @@ export default function Register() {
         email: step1Data.email,
         phone: step1Data.phone,
         totalPasses: 1,
-        participants: [{ participantName: step1Data.name, age: null, collegeOrCompany: null }]
+        participants: [{ participantName: step1Data.name, email: step1Data.email, phone: step1Data.phone }]
       }
     }, {
       onSuccess: (res) => { setBookingId(res.bookingId); setStep(4); },
@@ -128,67 +149,59 @@ export default function Register() {
     });
   };
 
-  const onPaymentSubmit = () => {
-    if (!screenshotUrl) {
-      toast({ title: "Screenshot required", description: "Please provide a valid URL for your payment screenshot.", variant: "destructive" });
-      return;
-    }
-    if (!bookingId) {
-      submitSinglePassRegistration();
-      return;
-    }
-    uploadScreenshot.mutate({ bookingId, data: { screenshotUrl } }, {
-      onSuccess: () => setStep(4),
-      onError: () => toast({ title: "Upload failed", description: "Could not submit payment screenshot.", variant: "destructive" })
-    });
-  };
-
-  const handlePaymentAndRegister = () => {
-    const totalP = form1.getValues().totalPasses;
-    if (totalP === 1) {
-      if (!screenshotUrl) {
-        toast({ title: "Screenshot required", description: "Please provide a valid URL for your payment screenshot.", variant: "destructive" });
-        return;
-      }
-      submitSinglePassWithScreenshot();
-    } else {
-      if (!screenshotUrl) {
-        toast({ title: "Screenshot required", description: "Please provide a valid URL for your payment screenshot.", variant: "destructive" });
-        return;
-      }
-      if (!bookingId) return;
-      uploadScreenshot.mutate({ bookingId, data: { screenshotUrl } }, {
-        onSuccess: () => setStep(4),
-        onError: () => toast({ title: "Upload failed", description: "Could not submit.", variant: "destructive" })
-      });
-    }
-  };
-
-  const submitSinglePassWithScreenshot = () => {
-    const step1Data = form1.getValues();
-    createRegistration.mutate({
-      data: {
-        name: step1Data.name,
-        email: step1Data.email,
-        phone: step1Data.phone,
-        totalPasses: 1,
-        participants: [{ participantName: step1Data.name, age: null, collegeOrCompany: null }]
-      }
-    }, {
-      onSuccess: (res) => {
-        const bId = res.bookingId;
-        setBookingId(bId);
-        uploadScreenshot.mutate({ bookingId: bId, data: { screenshotUrl } }, {
-          onSuccess: () => setStep(4),
-          onError: () => toast({ title: "Registration saved", description: "But screenshot upload failed. Use your booking ID to update it.", variant: "destructive" })
-        });
-      },
-      onError: () => toast({ title: "Registration failed", description: "Please try again later.", variant: "destructive" })
-    });
-  };
-
   const totalSteps = totalPasses > 1 ? 4 : 3;
   const currentStepDisplay = step <= 2 ? step : (totalPasses > 1 ? step : step - 1);
+
+  const uploadScreenshotFile = async (targetBookingId: string) => {
+    if (!screenshotFile) {
+      throw new Error("Screenshot file missing");
+    }
+
+    const screenshotData = await readFileAsDataUrl(screenshotFile);
+    await uploadScreenshot.mutateAsync({
+      bookingId: targetBookingId,
+      data: {
+        screenshotFileName: screenshotFile.name,
+        screenshotMimeType: screenshotFile.type || "image/*",
+        screenshotData,
+      },
+    });
+  };
+
+  const handlePaymentAndRegister = async () => {
+    if (!screenshotFile) {
+      toast({ title: "Screenshot required", description: "Please upload your payment screenshot image.", variant: "destructive" });
+      return;
+    }
+
+    const totalP = form1.getValues().totalPasses;
+
+    try {
+      if (totalP === 1) {
+        const step1Data = form1.getValues();
+        const registration = await createRegistration.mutateAsync({
+          data: {
+            name: step1Data.name,
+            email: step1Data.email,
+            phone: step1Data.phone,
+            totalPasses: 1,
+            participants: [{ participantName: step1Data.name, email: step1Data.email, phone: step1Data.phone }],
+          },
+        });
+        setBookingId(registration.bookingId);
+        await uploadScreenshotFile(registration.bookingId);
+      } else {
+        if (!bookingId) {
+          return;
+        }
+        await uploadScreenshotFile(bookingId);
+      }
+
+      setStep(4);
+    } catch {
+      toast({ title: "Upload failed", description: "Could not submit payment screenshot.", variant: "destructive" });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-muted/30 flex items-center justify-center py-20 px-4">
@@ -307,20 +320,20 @@ export default function Register() {
                             </FormItem>
                           )} />
                           <div className="grid grid-cols-2 gap-4">
-                            <FormField control={form2.control} name={`participants.${index}.age`} render={({ field: f }) => (
+                            <FormField control={form2.control} name={`participants.${index}.email`} render={({ field: f }) => (
                               <FormItem>
-                                <FormLabel className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Age</FormLabel>
+                                <FormLabel className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Email Address *</FormLabel>
                                 <FormControl>
-                                  <Input type="number" placeholder="Optional" {...f} value={f.value || ''} className="bg-white" data-testid={`input-participant-age-${index}`} />
+                                  <Input type="email" placeholder="you@example.com" {...f} className="bg-white" data-testid={`input-participant-email-${index}`} />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
                             )} />
-                            <FormField control={form2.control} name={`participants.${index}.collegeOrCompany`} render={({ field: f }) => (
+                            <FormField control={form2.control} name={`participants.${index}.phone`} render={({ field: f }) => (
                               <FormItem>
-                                <FormLabel className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">College / Company</FormLabel>
+                                <FormLabel className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Phone Number *</FormLabel>
                                 <FormControl>
-                                  <Input placeholder="Optional" {...f} className="bg-white" data-testid={`input-participant-org-${index}`} />
+                                  <Input type="tel" placeholder="10-digit mobile number" {...f} className="bg-white" data-testid={`input-participant-phone-${index}`} />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -360,16 +373,21 @@ export default function Register() {
 
                     <div>
                       <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-                        Payment Screenshot URL *
+                        Upload Payment Screenshot *
                       </label>
                       <Input
-                        placeholder="Paste the image link of your payment screenshot"
-                        value={screenshotUrl}
-                        onChange={(e) => setScreenshotUrl(e.target.value)}
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => setScreenshotFile(e.target.files?.[0] ?? null)}
                         className="bg-white"
-                        data-testid="input-screenshot-url"
+                        data-testid="input-screenshot-file"
                       />
-                      <p className="text-xs text-muted-foreground mt-1.5">Upload your screenshot to Google Photos / Drive and paste the public link here.</p>
+                      <p className="text-xs text-muted-foreground mt-1.5">Upload the payment screenshot image directly here.</p>
+                      {screenshotPreview && (
+                        <div className="mt-4 overflow-hidden rounded-xl border border-border bg-muted/20">
+                          <img src={screenshotPreview} alt="Payment screenshot preview" className="max-h-64 w-full object-contain bg-black/5" />
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex gap-3">
@@ -406,12 +424,9 @@ export default function Register() {
                     <p className="text-xs text-muted-foreground mb-0.5">Your Booking ID</p>
                     <p className="font-mono font-bold text-foreground text-sm">{bookingId}</p>
                   </div>
-                  <p className="text-sm text-muted-foreground max-w-sm mx-auto mb-7">
-                    Your registration is pending admin approval. You'll be notified once your passes are issued. Save your Booking ID.
+                  <p className="text-sm text-muted-foreground max-w-md mx-auto mb-4">
+                    Our team will review your registration process. Once approved, your tickets will be shared directly to your WhatsApp.
                   </p>
-                  <Button onClick={() => setLocation(`/booking/${bookingId}`)} data-testid="button-view-status">
-                    View Booking Status <ArrowRight className="ml-2 w-4 h-4" />
-                  </Button>
                 </motion.div>
               )}
 

@@ -7,5 +7,7 @@
  */
 
 export interface PaymentScreenshotInput {
-  screenshotUrl: string;
+  screenshotFileName: string;
+  screenshotMimeType: string;
+  screenshotData: string;
 }

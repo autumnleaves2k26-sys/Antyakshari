@@ -45,6 +45,10 @@ export interface Participant {
   registrationId: number;
   participantName: string;
   /** @nullable */
+  email?: string | null;
+  /** @nullable */
+  phone?: string | null;
+  /** @nullable */
   age?: number | null;
   /** @nullable */
   collegeOrCompany?: string | null;
@@ -72,10 +76,9 @@ export interface RegistrationWithParticipants {
 export interface ParticipantInput {
   /** @minLength 2 */
   participantName: string;
-  /** @nullable */
-  age?: number | null;
-  /** @nullable */
-  collegeOrCompany?: string | null;
+  email: string;
+  /** @minLength 10 */
+  phone: string;
 }
 
 export interface RegistrationInput {
@@ -93,7 +96,9 @@ export interface RegistrationInput {
 }
 
 export interface PaymentScreenshotInput {
-  screenshotUrl: string;
+  screenshotFileName: string;
+  screenshotMimeType: string;
+  screenshotData: string;
 }
 
 export interface AdminLoginInput {

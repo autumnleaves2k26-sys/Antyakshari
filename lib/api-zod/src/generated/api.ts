@@ -28,6 +28,8 @@ export const createRegistrationBodyTotalPassesMax = 10;
 
 export const createRegistrationBodyParticipantsItemParticipantNameMin = 2;
 
+export const createRegistrationBodyParticipantsItemPhoneMin = 10;
+
 
 
 export const CreateRegistrationBody = zod.object({
@@ -37,8 +39,8 @@ export const CreateRegistrationBody = zod.object({
   "totalPasses": zod.number().min(1).max(createRegistrationBodyTotalPassesMax),
   "participants": zod.array(zod.object({
   "participantName": zod.string().min(createRegistrationBodyParticipantsItemParticipantNameMin),
-  "age": zod.number().nullish(),
-  "collegeOrCompany": zod.string().nullish()
+  "email": zod.string().email(),
+  "phone": zod.string().min(createRegistrationBodyParticipantsItemPhoneMin)
 }))
 })
 
@@ -64,6 +66,8 @@ export const GetRegistrationResponse = zod.object({
   "id": zod.number(),
   "registrationId": zod.number(),
   "participantName": zod.string(),
+  "email": zod.string().nullish(),
+  "phone": zod.string().nullish(),
   "age": zod.number().nullish(),
   "collegeOrCompany": zod.string().nullish(),
   "passId": zod.string().nullish(),
@@ -81,7 +85,9 @@ export const UploadPaymentScreenshotParams = zod.object({
 })
 
 export const UploadPaymentScreenshotBody = zod.object({
-  "screenshotUrl": zod.string()
+  "screenshotFileName": zod.string(),
+  "screenshotMimeType": zod.string(),
+  "screenshotData": zod.string()
 })
 
 export const UploadPaymentScreenshotResponse = zod.object({
@@ -131,6 +137,8 @@ export const ListRegistrationsResponseItem = zod.object({
   "id": zod.number(),
   "registrationId": zod.number(),
   "participantName": zod.string(),
+  "email": zod.string().nullish(),
+  "phone": zod.string().nullish(),
   "age": zod.number().nullish(),
   "collegeOrCompany": zod.string().nullish(),
   "passId": zod.string().nullish(),
@@ -162,6 +170,8 @@ export const ApproveRegistrationResponse = zod.object({
   "id": zod.number(),
   "registrationId": zod.number(),
   "participantName": zod.string(),
+  "email": zod.string().nullish(),
+  "phone": zod.string().nullish(),
   "age": zod.number().nullish(),
   "collegeOrCompany": zod.string().nullish(),
   "passId": zod.string().nullish(),

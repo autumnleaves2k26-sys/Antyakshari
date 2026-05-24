@@ -73,7 +73,7 @@ export default function Scan() {
 
   const validateToken = async (token: string) => {
     try {
-      const res = await fetch(`/api/passes/validate/${encodeURIComponent(token)}`);
+      const res = await fetch(`/api/passes/${encodeURIComponent(token)}/validate`);
       const data = await res.json();
       setPassInfo({
         participantName: data.participantName,

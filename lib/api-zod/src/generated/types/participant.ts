@@ -11,6 +11,10 @@ export interface Participant {
   registrationId: number;
   participantName: string;
   /** @nullable */
+  email?: string | null;
+  /** @nullable */
+  phone?: string | null;
+  /** @nullable */
   age?: number | null;
   /** @nullable */
   collegeOrCompany?: string | null;

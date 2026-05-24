@@ -1,12 +1,15 @@
 import { Router, type IRouter } from "express";
-import { eq } from "drizzle-orm";
-import { db, participantsTable } from "@workspace/db";
 import {
   ValidatePassParams,
   MarkPassUsedParams,
   ValidatePassResponse,
   MarkPassUsedResponse,
 } from "@workspace/api-zod";
+import {
+  findParticipantByQrToken,
+  mapParticipant,
+  markParticipantUsedByQrToken,
+} from "../lib/supabase";
 
 const router: IRouter = Router();
 
@@ -18,10 +21,8 @@ router.get("/passes/:qrToken/validate", async (req, res): Promise<void> => {
     return;
   }
 
-  const [participant] = await db
-    .select()
-    .from(participantsTable)
-    .where(eq(participantsTable.qrToken, params.data.qrToken));
+  const participantRow = await findParticipantByQrToken(params.data.qrToken);
+  const participant = participantRow ? mapParticipant(participantRow) : null;
 
   if (!participant || !participant.passId) {
     res.json(ValidatePassResponse.parse({
@@ -55,10 +56,8 @@ router.post("/passes/:qrToken/mark-used", async (req, res): Promise<void> => {
     return;
   }
 
-  const [participant] = await db
-    .select()
-    .from(participantsTable)
-    .where(eq(participantsTable.qrToken, params.data.qrToken));
+  const participantRow = await findParticipantByQrToken(params.data.qrToken);
+  const participant = participantRow ? mapParticipant(participantRow) : null;
 
   if (!participant || !participant.passId) {
     res.json(MarkPassUsedResponse.parse({
@@ -72,11 +71,20 @@ router.post("/passes/:qrToken/mark-used", async (req, res): Promise<void> => {
     return;
   }
 
-  const [updated] = await db
-    .update(participantsTable)
-    .set({ isUsed: true })
-    .where(eq(participantsTable.qrToken, params.data.qrToken))
-    .returning();
+  const updatedRow = await markParticipantUsedByQrToken(params.data.qrToken);
+  const updated = updatedRow ? mapParticipant(updatedRow) : null;
+
+  if (!updated) {
+    res.json(MarkPassUsedResponse.parse({
+      status: "invalid",
+      passId: null,
+      participantName: null,
+      eventName: "Antyakshari",
+      eventDate: "31 May 2026",
+      isUsed: false,
+    }));
+    return;
+  }
 
   req.log.info({ qrToken: params.data.qrToken, passId: participant.passId }, "Pass marked as used");
 

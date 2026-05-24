@@ -5,7 +5,7 @@ export function Navbar() {
   const [location] = useLocation();
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
+    <nav className="fixed top-0 left-0 right-0 z-[70] bg-background/70 backdrop-blur-md border-b border-border/50">
       <div className="container mx-auto px-4 h-20 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3 group" data-testid="link-home-logo">
           <img 

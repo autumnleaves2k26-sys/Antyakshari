@@ -98,43 +98,179 @@ export default function BookingStatus() {
         </Card>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {registration.participants?.map((p, i) => (
-          <Card key={p.id} className="bg-card border-border overflow-hidden flex flex-col group">
-            {p.passId && registration.paymentStatus === 'approved' ? (
-              <div className="relative aspect-[4/2] w-full overflow-hidden border-b border-border/50">
-                <img src={passTemplate} alt="Event Pass" className="w-full h-full object-cover opacity-60 mix-blend-luminosity group-hover:opacity-80 transition-opacity" />
-                <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent" />
-                <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end">
-                  <div>
-                    <p className="font-serif font-bold text-xl text-primary drop-shadow-md">{p.participantName}</p>
-                    <p className="font-mono text-xs text-muted-foreground drop-shadow-md">PASS: {p.passId}</p>
-                  </div>
-                  <div className="p-1.5 bg-white rounded">
-                    {/* Dummy QR representation for UI */}
-                    <div className="w-12 h-12 bg-black flex items-center justify-center">
-                      <QrCodeIcon className="w-10 h-10 text-white" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 justify-items-center">
+        {registration.participants?.map((p, i) => {
+          const hasPass = p.passId && registration.paymentStatus === 'approved';
+
+          const handleDownload = () => {
+            if (!hasPass || !p.passId || !p.qrToken) return;
+
+            const bgImg = new Image();
+            bgImg.crossOrigin = "anonymous";
+            bgImg.src = passTemplate;
+            bgImg.onload = () => {
+              const canvas = document.createElement("canvas");
+              canvas.width = bgImg.naturalWidth || 600;
+              canvas.height = bgImg.naturalHeight || 1000;
+              const ctx = canvas.getContext("2d");
+              if (!ctx) return;
+
+              const W = canvas.width;
+              const H = canvas.height;
+
+              // 1. Draw Pass Template Background
+              ctx.drawImage(bgImg, 0, 0, W, H);
+
+              // 2. Draw QR code
+              const qrImage = new Image();
+              qrImage.crossOrigin = "anonymous";
+              qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(p.passId!)}`;
+              qrImage.onload = () => {
+                // White card bg for QR
+                const qrCardSize = W * 0.44;
+                const qrX = (W - qrCardSize) / 2;
+                const qrY = H * 0.465;
+
+                ctx.fillStyle = "#ffffff";
+                ctx.beginPath();
+                ctx.roundRect(qrX, qrY, qrCardSize, qrCardSize, 24);
+                ctx.fill();
+
+                // QR Code image
+                const padding = qrCardSize * 0.08;
+                ctx.drawImage(qrImage, qrX + padding, qrY + padding, qrCardSize - 2 * padding, qrCardSize - 2 * padding);
+
+                // Y-coordinate reference for text drawing
+                const cardY = H * 0.715;
+
+                // 4. Pass Holder Details Text with Shadow for Readability (No Grey Background Box)
+                ctx.textAlign = "center";
+                ctx.shadowColor = "rgba(0, 0, 0, 0.85)";
+                ctx.shadowBlur = 6;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 2;
+                
+                // Pass Holder Label
+                ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
+                ctx.font = "bold 13px sans-serif";
+                ctx.fillText("PASS HOLDER", W / 2, cardY + 32);
+
+                // Pass Holder Name
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "bold 23px sans-serif";
+                ctx.fillText(p.participantName.toUpperCase(), W / 2, cardY + 62);
+
+                // Venue Label
+                ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
+                ctx.font = "bold 13px sans-serif";
+                ctx.fillText("VENUE", W / 2, cardY + 98);
+
+                // Venue Name
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "bold 16px sans-serif";
+                ctx.fillText("PRAKRUTHI RESTAURANT", W / 2, cardY + 124);
+                ctx.font = "14px sans-serif";
+                ctx.fillText("Karimnagar", W / 2, cardY + 144);
+
+                // Pass ID Label
+                ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
+                ctx.font = "bold 13px sans-serif";
+                ctx.fillText("PASS ID", W / 2, cardY + 180);
+
+                // Pass ID Value
+                ctx.fillStyle = "#e8813a";
+                ctx.font = "bold 21px monospace";
+                ctx.fillText(p.passId!, W / 2, cardY + 212);
+
+                // Clear shadow for any other canvas operations
+                ctx.shadowColor = "transparent";
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+
+                // Trigger download
+                const url = canvas.toDataURL("image/png");
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `Pass-${p.participantName.replace(/\s+/g, "_")}-${p.passId}.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+              };
+            };
+          };
+
+          return (
+            <div key={p.id} className="w-full max-w-sm flex flex-col items-center">
+              {hasPass ? (
+                <>
+                  {/* Vertical Pass Using Provided Pass Template */}
+                  <div className="w-full aspect-[1/1.65] rounded-3xl overflow-hidden relative shadow-2xl border border-white/10 group">
+                    {/* Template Background Image */}
+                    <img 
+                      src={passTemplate} 
+                      alt="Pass Template" 
+                      className="absolute inset-0 w-full h-full object-cover" 
+                    />
+                    
+                    {/* Content Overlay */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-between p-6 bg-black/10">
+                      {/* Top spacing to preserve title pre-rendered on the template */}
+                      <div className="h-[40.5%]" />
+                      
+                      {/* QR Code Container */}
+                      <div className="p-3 bg-white rounded-2xl shadow-xl border border-white/20">
+                        <img 
+                          src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${p.passId}`} 
+                          alt="QR Code" 
+                          className="w-32 h-32 object-contain"
+                        />
+                      </div>
+                      
+                      {/* Details overlay at the bottom */}
+                      <div className="w-full text-center space-y-2 mt-auto mb-2 p-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)]">
+                        <div>
+                          <p className="text-[8px] uppercase tracking-widest text-white/50">Pass Holder</p>
+                          <p className="text-sm font-serif font-bold text-white tracking-wide uppercase truncate">{p.participantName}</p>
+                        </div>
+                        
+                        <div>
+                          <p className="text-[8px] uppercase tracking-widest text-white/50">Venue</p>
+                          <p className="text-[10px] font-semibold text-white/90">PRAKRUTHI RESTAURANT, Karimnagar</p>
+                        </div>
+                        
+                        <div className="pt-1.5">
+                          <p className="text-[8px] uppercase tracking-widest text-white/50">Pass ID</p>
+                          <p className="font-mono text-xs text-primary font-bold tracking-wider">{p.passId}</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            ) : (
-              <div className="p-6 pb-2">
-                <div className="flex items-center gap-2 text-muted-foreground mb-4">
-                  <User className="w-4 h-4" />
-                  <span className="font-medium text-foreground">{p.participantName}</span>
-                </div>
-              </div>
-            )}
-            
-            <CardContent className="p-4 bg-card/80 pt-4 flex-1">
-              <div className="text-sm text-muted-foreground flex gap-4">
-                {p.age && <span>Age: {p.age}</span>}
-                {p.collegeOrCompany && <span className="truncate">{p.collegeOrCompany}</span>}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+                  
+                  <button 
+                    onClick={handleDownload}
+                    className="mt-4 px-6 py-2.5 bg-primary text-white text-sm font-semibold rounded-xl hover:bg-primary/90 transition-colors shadow-sm inline-flex items-center gap-2"
+                  >
+                    Download Pass Image
+                  </button>
+                </>
+              ) : (
+                <Card className="w-full bg-card border-border p-6 flex flex-col justify-between h-[250px]">
+                  <div className="flex items-center gap-2 text-muted-foreground mb-4">
+                    <User className="w-4 h-4" />
+                    <span className="font-medium text-foreground">{p.participantName}</span>
+                  </div>
+                  <CardContent className="p-0 bg-transparent flex-1 flex flex-col justify-end text-sm text-muted-foreground">
+                    <div className="flex gap-4">
+                      {p.age && <span>Age: {p.age}</span>}
+                      {p.collegeOrCompany && <span className="truncate">{p.collegeOrCompany}</span>}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

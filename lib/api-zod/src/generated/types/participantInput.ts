@@ -9,8 +9,7 @@
 export interface ParticipantInput {
   /** @minLength 2 */
   participantName: string;
-  /** @nullable */
-  age?: number | null;
-  /** @nullable */
-  collegeOrCompany?: string | null;
+  email: string;
+  /** @minLength 10 */
+  phone: string;
 }
