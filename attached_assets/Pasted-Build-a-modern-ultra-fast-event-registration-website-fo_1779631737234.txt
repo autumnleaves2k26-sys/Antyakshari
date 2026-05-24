@@ -1,0 +1,261 @@
+Build a modern ultra-fast event registration website for an event called “Antyakshari” happening on 31 May 2026.
+
+The website should feel premium, youthful, musical, cinematic, and modern — inspired by indie music festivals and Gen-Z concert aesthetics.
+
+IMPORTANT:
+- Keep the tech stack VERY SIMPLE and lightweight.
+- Prioritize speed, smoothness, responsiveness, and minimal backend complexity.
+- The website should load extremely fast even on mobile devices.
+- Use modern typography and clean layouts instead of heavy visuals.
+- Use static-first architecture wherever possible.
+
+# TECH STACK
+
+Frontend:
+- Next.js 15 (App Router)
+- Tailwind CSS
+- shadcn/ui
+- Framer Motion (minimal animations only)
+
+Backend:
+- Supabase
+  - PostgreSQL
+  - Authentication
+  - File uploads/storage
+
+Hosting:
+- Vercel optimized
+
+# WEBSITE REQUIREMENTS
+
+The website mainly has:
+1. A stunning static homepage
+2. Event registration system
+3. Admin dashboard
+4. Pass generation system
+5. QR validation system
+
+# DESIGN STYLE
+
+The website should feel:
+- warm
+- musical
+- premium
+- immersive
+- elegant
+- modern youth event vibe
+
+Use:
+- large typography
+- cinematic hero section
+- soft gradients
+- blurred glassmorphism overlays
+- warm orange/golden lights
+- smooth scrolling
+- premium spacing
+- clean typography hierarchy
+
+Main colors:
+- Warm orange
+- Soft gold
+- Cream
+- Matte black
+
+Typography suggestions:
+- Clash Display
+- Satoshi
+- General Sans
+
+# HOMEPAGE
+
+Create a beautiful homepage with sections:
+
+1. Hero Section
+- Fullscreen hero
+- Background image/video aesthetic inspired by live music gatherings
+- Large “Antyakshari” typography
+- Date: 31 May 2026
+- CTA button: “Register Now”
+- Smooth animated entrance
+
+2. About Event
+- Brief description
+- Youth/music community vibe
+
+3. Event Highlights
+- Music
+- Fun
+- Crowd energy
+- Social vibe
+
+4. Pricing Section
+- Registration fee
+- Number of passes selector
+
+5. Rules Section
+- Simple event rules
+
+6. Venue + Timing
+
+7. Final CTA
+
+Footer should look clean and premium.
+
+# PERFORMANCE REQUIREMENTS
+
+VERY IMPORTANT:
+- Homepage should be mostly static-rendered
+- Use optimized images
+- Use next/image
+- Lazy load animations
+- Minimal JavaScript
+- Fast Lighthouse score
+- Mobile-first responsive design
+
+# REGISTRATION SYSTEM
+
+When user clicks “Register Now”:
+
+Show a form asking:
+- Full Name
+- Email
+- Phone Number
+- Number of Passes
+
+Dynamic participant system:
+
+If user selects:
+1 pass → ask details for 1 participant
+2 passes → ask details for 2 participants
+etc.
+
+For each participant:
+- Participant Name
+- Optional Age
+- Optional College/Company
+
+Then show:
+- Payment QR code
+- Payment instructions
+- Upload payment screenshot
+
+After submission:
+- Save registration as PENDING
+
+# DATABASE STRUCTURE
+
+Create tables:
+
+## registrations
+- id
+- booking_id
+- name
+- email
+- phone
+- total_passes
+- payment_screenshot
+- payment_status
+- created_at
+
+## participants
+- id
+- registration_id
+- participant_name
+- pass_id
+- qr_token
+
+# ADMIN DASHBOARD
+
+Create secure admin login.
+
+Dashboard features:
+- View registrations
+- Approve/reject payments
+- Open uploaded payment screenshots
+- Generate passes automatically
+- Download passes
+- Bulk ZIP download
+
+Dashboard UI should be simple and lightweight.
+
+# PASS GENERATION SYSTEM
+
+When admin approves registration:
+- Generate unique pass IDs automatically
+
+Example:
+- ANT-2026-001
+- ANT-2026-002
+
+Generate unique QR code for every pass.
+
+Each pass should contain:
+- Event name
+- Participant name
+- Unique pass ID
+- QR code
+- Date
+- Premium ticket-style design
+
+Pass design should feel like:
+- concert ticket
+- music festival pass
+- premium event invite
+
+# QR VALIDATION SYSTEM
+
+Create QR scanner/validation page.
+
+When scanned:
+- Show VALID / USED / INVALID
+- Mark pass as USED after first scan
+- Prevent duplicate entry
+
+# BULK DOWNLOAD FEATURE
+
+Admin should be able to:
+- Download all passes at once
+- Automatically generate ZIP file
+
+# LIBRARIES
+
+Install:
+- react-hook-form
+- zod
+- qrcode
+- jszip
+- pdf-lib
+- lucide-react
+- framer-motion
+
+# PROJECT STRUCTURE
+
+Use clean scalable folder structure:
+
+/app
+/components
+/lib
+/utils
+/supabase
+/types
+
+# UI EXPECTATIONS
+
+The UI should look:
+- extremely polished
+- minimal but premium
+- modern startup-level quality
+- cinematic event branding
+- visually balanced
+- smooth but not over-animated
+
+Avoid:
+- clutter
+- too many colors
+- heavy gradients
+- slow animations
+- complex backend architecture
+
+# FINAL GOAL
+
+Build a production-ready lightweight event registration platform for “Antyakshari” that feels premium, loads extremely fast, and is easy to manage by admins.
