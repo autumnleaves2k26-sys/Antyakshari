@@ -1,5 +1,5 @@
 {
-  "outputDirectory": "artifacts/antyakshari/dist/public",
+  "outputDirectory": "public",
   "rewrites": [
     {
       "source": "/api/:path*",
