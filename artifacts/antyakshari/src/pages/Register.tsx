@@ -353,8 +353,8 @@ export default function Register() {
                       </div>
                       <div className="mt-2 px-5 py-2 bg-primary/10 rounded-lg border border-primary/20 text-center">
                         <p className="text-xs text-muted-foreground">Amount to pay</p>
-                        <p className="font-serif text-2xl font-bold text-primary">₹{199 * form1.getValues().totalPasses}</p>
-                        <p className="text-xs text-muted-foreground">{form1.getValues().totalPasses} pass{form1.getValues().totalPasses > 1 ? "es" : ""} × ₹199</p>
+                        <p className="font-serif text-2xl font-bold text-primary">₹{139 * form1.getValues().totalPasses}</p>
+                        <p className="text-xs text-muted-foreground">{form1.getValues().totalPasses} pass{form1.getValues().totalPasses > 1 ? "es" : ""} × ₹139</p>
                       </div>
                     </div>
 

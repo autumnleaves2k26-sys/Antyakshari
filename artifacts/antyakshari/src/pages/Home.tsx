@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { MapPin, Clock, Music, Users, Sparkles, Zap, ChevronDown, Instagram, Twitter, Facebook, ArrowRight, CheckCircle } from "lucide-react";
 import autumnLogo from "@assets/autumn_leaves_events_1779631833747.jpeg";
+import heroBg from "@assets/image_1779633627491.png";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -50,12 +51,18 @@ export default function Home() {
 
       {/* ─── HERO ─── */}
       <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden pt-16 border-b border-border">
-        <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(to_bottom,transparent_60%,hsl(220,13%,96%))]" />
+        <img
+          src={heroBg}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-black/55" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.2)_0%,rgba(0,0,0,0.5)_60%,rgba(0,0,0,0.8)_100%)]" />
 
         <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
           <motion.div
             custom={0} variants={fadeUp} initial="hidden" animate="visible"
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-white text-xs font-medium text-muted-foreground mb-8 shadow-xs"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/20 bg-white/10 backdrop-blur-sm text-xs font-medium text-white/80 mb-8"
           >
             <img src={autumnLogo} alt="" className="h-4 w-4 rounded-full object-cover" />
             Autumn Leaves Events Presents
@@ -63,7 +70,7 @@ export default function Home() {
 
           <motion.h1
             custom={1} variants={fadeUp} initial="hidden" animate="visible"
-            className="font-serif text-[4rem] sm:text-[6rem] md:text-[8rem] lg:text-[9.5rem] font-black leading-[0.9] text-foreground mb-6 italic tracking-tight"
+            className="font-serif text-[4rem] sm:text-[6rem] md:text-[8rem] lg:text-[9.5rem] font-black leading-[0.9] text-white mb-6 italic tracking-tight"
             data-testid="hero-title"
           >
             Antyakshari
@@ -71,7 +78,7 @@ export default function Home() {
 
           <motion.p
             custom={2} variants={fadeUp} initial="hidden" animate="visible"
-            className="font-serif text-xl sm:text-2xl text-muted-foreground italic mb-8"
+            className="font-serif text-xl sm:text-2xl text-white/70 italic mb-8"
             data-testid="hero-subtitle"
           >
             more than a jamming
@@ -79,14 +86,14 @@ export default function Home() {
 
           <motion.div
             custom={3} variants={fadeUp} initial="hidden" animate="visible"
-            className="flex items-center justify-center gap-6 mb-12 text-sm text-muted-foreground"
+            className="flex items-center justify-center gap-6 mb-12 text-sm text-white/60"
             data-testid="hero-date"
           >
             <span className="flex items-center gap-2">
               <Clock size={15} className="text-primary" />
               31st May 2026
             </span>
-            <span className="w-px h-4 bg-border" />
+            <span className="w-px h-4 bg-white/20" />
             <span className="flex items-center gap-2">
               <MapPin size={15} className="text-primary" />
               Venue TBA
@@ -103,7 +110,7 @@ export default function Home() {
             </Link>
             <a
               href="#about"
-              className="inline-flex items-center gap-2 px-7 py-3 bg-white text-foreground font-semibold text-sm rounded-lg border border-border hover:bg-muted transition-colors shadow-xs"
+              className="inline-flex items-center gap-2 px-7 py-3 bg-white/10 backdrop-blur-sm text-white font-semibold text-sm rounded-lg border border-white/20 hover:bg-white/20 transition-colors"
             >
               Learn More
             </a>
@@ -112,7 +119,7 @@ export default function Home() {
 
         <motion.div
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2, duration: 1 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-muted-foreground/40 animate-bounce"
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/30 animate-bounce"
         >
           <ChevronDown size={20} />
         </motion.div>
@@ -207,7 +214,7 @@ export default function Home() {
                 <div className="p-10 border-b md:border-b-0 md:border-r border-border">
                   <p className="text-xs text-muted-foreground uppercase tracking-wider mb-3 font-medium">Standard Pass</p>
                   <div className="flex items-baseline gap-1 mb-6">
-                    <span className="font-serif text-6xl font-black text-primary">₹199</span>
+                    <span className="font-serif text-6xl font-black text-primary">₹139</span>
                     <span className="text-muted-foreground text-sm">/ person</span>
                   </div>
                   <Link
