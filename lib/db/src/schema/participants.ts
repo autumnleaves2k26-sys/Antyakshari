@@ -9,6 +9,8 @@ export const participantsTable = pgTable("participants", {
     .notNull()
     .references(() => registrationsTable.id),
   participantName: text("participant_name").notNull(),
+  email: text("email"),
+  phone: text("phone"),
   age: integer("age"),
   collegeOrCompany: text("college_or_company"),
   passId: text("pass_id"),
