@@ -1,6 +1,6 @@
 {
   "buildCommand": "pnpm run -w vercel-build",
-  "outputDirectory": "artifacts/antyakshari/dist",
+  "outputDirectory": "dist",
   "rewrites": [
     {
       "source": "/api/(.*)",
