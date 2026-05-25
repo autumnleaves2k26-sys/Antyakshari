@@ -3,13 +3,21 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Antyakshari Event Registration API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: registrations
+    description: Event registration operations
+  - name: participants
+    description: Participant operations
+  - name: admin
+    description: Admin dashboard operations
+  - name: passes
+    description: Pass generation and validation
 paths:
   /healthz:
     get:
@@ -24,6 +32,206 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /registrations:
+    post:
+      operationId: createRegistration
+      tags: [registrations]
+      summary: Submit event registration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegistrationInput"
+      responses:
+        "201":
+          description: Registration created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Registration"
+        "400":
+          description: Bad request
+
+  /registrations/{bookingId}:
+    get:
+      operationId: getRegistration
+      tags: [registrations]
+      summary: Get registration by booking ID
+      parameters:
+        - name: bookingId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Registration found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistrationWithParticipants"
+        "404":
+          description: Not found
+
+  /registrations/{bookingId}/payment-screenshot:
+    post:
+      operationId: uploadPaymentScreenshot
+      tags: [registrations]
+      summary: Upload payment screenshot URL
+      parameters:
+        - name: bookingId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentScreenshotInput"
+      responses:
+        "200":
+          description: Screenshot URL saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Registration"
+
+  /admin/login:
+    post:
+      operationId: adminLogin
+      tags: [admin]
+      summary: Admin login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminLoginInput"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminAuthResult"
+        "401":
+          description: Unauthorized
+
+  /admin/registrations:
+    get:
+      operationId: listRegistrations
+      tags: [admin]
+      summary: List all registrations (admin)
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [pending, approved, rejected]
+      responses:
+        "200":
+          description: List of registrations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RegistrationWithParticipants"
+
+  /admin/registrations/{id}/approve:
+    post:
+      operationId: approveRegistration
+      tags: [admin]
+      summary: Approve registration and generate passes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Approved and passes generated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistrationWithParticipants"
+
+  /admin/registrations/{id}/reject:
+    post:
+      operationId: rejectRegistration
+      tags: [admin]
+      summary: Reject registration
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Rejected
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Registration"
+
+  /admin/stats:
+    get:
+      operationId: getAdminStats
+      tags: [admin]
+      summary: Get admin dashboard stats
+      responses:
+        "200":
+          description: Stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminStats"
+
+  /passes/{qrToken}/validate:
+    get:
+      operationId: validatePass
+      tags: [passes]
+      summary: Validate a pass by QR token
+      parameters:
+        - name: qrToken
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Validation result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PassValidationResult"
+
+  /passes/{qrToken}/mark-used:
+    post:
+      operationId: markPassUsed
+      tags: [passes]
+      summary: Mark a pass as used
+      parameters:
+        - name: qrToken
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Pass marked as used
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PassValidationResult"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +242,177 @@ components:
       required:
         - status
 
+    Registration:
+      type: object
+      required: [id, bookingId, name, email, phone, totalPasses, paymentStatus, createdAt]
+      properties:
+        id:
+          type: integer
+        bookingId:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        totalPasses:
+          type: integer
+        paymentScreenshot:
+          type: ["string", "null"]
+        paymentStatus:
+          type: string
+          enum: [pending, approved, rejected]
+        createdAt:
+          type: string
+
+    RegistrationWithParticipants:
+      type: object
+      required: [id, bookingId, name, email, phone, totalPasses, paymentStatus, createdAt, participants]
+      properties:
+        id:
+          type: integer
+        bookingId:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        totalPasses:
+          type: integer
+        paymentScreenshot:
+          type: ["string", "null"]
+        paymentStatus:
+          type: string
+          enum: [pending, approved, rejected]
+        createdAt:
+          type: string
+        participants:
+          type: array
+          items:
+            $ref: "#/components/schemas/Participant"
+
+    Participant:
+      type: object
+      required: [id, registrationId, participantName]
+      properties:
+        id:
+          type: integer
+        registrationId:
+          type: integer
+        participantName:
+          type: string
+        email:
+          type: ["string", "null"]
+        phone:
+          type: ["string", "null"]
+        age:
+          type: ["integer", "null"]
+        collegeOrCompany:
+          type: ["string", "null"]
+        passId:
+          type: ["string", "null"]
+        qrToken:
+          type: ["string", "null"]
+        isUsed:
+          type: boolean
+
+    RegistrationInput:
+      type: object
+      required: [name, email, phone, totalPasses, participants]
+      properties:
+        name:
+          type: string
+          minLength: 2
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          minLength: 10
+        totalPasses:
+          type: integer
+          minimum: 1
+          maximum: 10
+        participants:
+          type: array
+          items:
+            $ref: "#/components/schemas/ParticipantInput"
+
+    ParticipantInput:
+      type: object
+      required: [participantName, email, phone]
+      properties:
+        participantName:
+          type: string
+          minLength: 2
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          minLength: 10
+
+    PaymentScreenshotInput:
+      type: object
+      required: [screenshotFileName, screenshotMimeType, screenshotData]
+      properties:
+        screenshotFileName:
+          type: string
+        screenshotMimeType:
+          type: string
+        screenshotData:
+          type: string
+
+    AdminLoginInput:
+      type: object
+      required: [password]
+      properties:
+        password:
+          type: string
+
+    AdminAuthResult:
+      type: object
+      required: [success, token]
+      properties:
+        success:
+          type: boolean
+        token:
+          type: string
+
+    AdminStats:
+      type: object
+      required: [totalRegistrations, pendingRegistrations, approvedRegistrations, rejectedRegistrations, totalPasses, totalPassesIssued]
+      properties:
+        totalRegistrations:
+          type: integer
+        pendingRegistrations:
+          type: integer
+        approvedRegistrations:
+          type: integer
+        rejectedRegistrations:
+          type: integer
+        totalPasses:
+          type: integer
+        totalPassesIssued:
+          type: integer
+
+    PassValidationResult:
+      type: object
+      required: [status, passId, participantName, eventName, eventDate]
+      properties:
+        status:
+          type: string
+          enum: [valid, used, invalid]
+        passId:
+          type: ["string", "null"]
+        participantName:
+          type: ["string", "null"]
+        eventName:
+          type: string
+        eventDate:
+          type: string
+        isUsed:
+          type: boolean
