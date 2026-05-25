@@ -41,17 +41,22 @@ function nanoid(size = 8) {
 
 // artifacts/api-server/src/lib/supabase.ts
 var paymentScreenshotBucket = "payment-screenshots";
-var baseUrl = process.env.SUPABASE_URL?.replace(/\/+$/, "");
-var serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-if (!baseUrl || !serviceRoleKey) {
-  throw new Error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set.");
+var baseUrl = process.env.SUPABASE_URL?.replace(/\/+$/, "") || "";
+var serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+function checkSupabaseEnv() {
+  if (!baseUrl || !serviceRoleKey) {
+    throw new Error(
+      "SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables are missing on Vercel. Please make sure you have added them in your Vercel Project Settings under Environment Variables, and then redeploy."
+    );
+  }
 }
-var restBaseUrl = `${baseUrl}/rest/v1`;
-var storageBaseUrl = `${baseUrl}/storage/v1`;
+var restBaseUrl = baseUrl ? `${baseUrl}/rest/v1` : "";
+var storageBaseUrl = baseUrl ? `${baseUrl}/storage/v1` : "";
 function encodeEq(value) {
   return `eq.${encodeURIComponent(String(value))}`;
 }
 function headers(prefer) {
+  checkSupabaseEnv();
   return {
     apikey: serviceRoleKey,
     Authorization: `Bearer ${serviceRoleKey}`,
@@ -82,6 +87,7 @@ async function request(path, options = {}) {
   return text ? JSON.parse(text) : null;
 }
 async function ensureStorageBucket(bucketName) {
+  checkSupabaseEnv();
   const lookup = await fetch(`${storageBaseUrl}/bucket/${bucketName}`, {
     headers: {
       apikey: serviceRoleKey,
