@@ -1,17 +1,11 @@
 {
   "buildCommand": "pnpm run -w vercel-build",
   "outputDirectory": "dist",
-  "routes": [
+  "framework": null,
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/index.ts"
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
