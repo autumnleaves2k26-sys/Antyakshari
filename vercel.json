@@ -1,0 +1,14 @@
+{
+  "buildCommand": "pnpm run -w vercel-build",
+  "outputDirectory": "artifacts/antyakshari/dist/public",
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.ts"
+    },
+    {
+      "source": "/((?!\\..*|api).*)",
+      "destination": "/index.html"
+    }
+  ]
+}
