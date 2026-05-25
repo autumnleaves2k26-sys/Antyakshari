@@ -310,21 +310,45 @@ export default function Home() {
       </section>
 
       {/* ─── FOOTER ─── */}
-      <footer className="border-t border-white/10 py-10 px-6 bg-black/20 backdrop-blur-sm text-white">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-5">
+      <footer className="border-t border-slate-200/80 py-12 px-6 bg-white text-slate-600 shadow-inner">
+        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <img src={autumnLogo} alt="Autumn Leaves Events" className="h-9 w-auto rounded object-contain" />
+            <div className="relative group">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-secondary rounded-full blur opacity-25 group-hover:opacity-65 transition duration-500"></div>
+              <img 
+                src={autumnLogo} 
+                alt="Autumn Leaves Events" 
+                className="relative h-10 w-10 rounded-full object-cover border border-slate-100 shadow-sm" 
+              />
+            </div>
             <div>
-              <p className="text-xs font-semibold text-foreground">Autumn Leaves Events</p>
-              <p className="text-xs text-muted-foreground">We Plan Your Party</p>
+              <p className="text-xs font-bold text-slate-900 tracking-wide">Autumn Leaves Events</p>
+              <p className="text-[10px] text-slate-400 italic">We Plan Your Party</p>
             </div>
           </div>
-          <div className="text-center sm:text-left">
-            <p className="text-xs text-white/70">For queries: <span className="font-semibold text-white">+91 78939 49045</span></p>
-            <p className="text-xs text-muted-foreground">© 2026 Autumn Leaves Events. All rights reserved.</p>
+          <div className="text-center sm:text-left flex flex-col gap-1">
+            <p className="text-xs text-slate-500">
+              For queries:{" "}
+              <a 
+                href="tel:+917893949045" 
+                className="font-semibold text-slate-800 hover:text-primary transition-colors"
+              >
+                +91 78939 49045
+              </a>
+            </p>
+            <p className="text-[10px] text-slate-400">© 2026 Autumn Leaves Events. All rights reserved.</p>
           </div>
-          <div className="flex gap-4 text-muted-foreground">
-            <a href="https://www.instagram.com/autumnleaves.eventco" target="_blank" rel="noreferrer" aria-label="Instagram" className="hover:text-primary transition-colors" data-testid="footer-instagram"><Instagram size={17} /></a>
+          <div className="flex gap-4 items-center">
+            <a 
+              href="https://www.instagram.com/autumnleaves.eventco" 
+              target="_blank" 
+              rel="noreferrer" 
+              aria-label="Instagram" 
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-50 text-slate-600 hover:text-white hover:bg-gradient-to-tr hover:from-[#feda77] hover:via-[#dd2a7b] hover:to-[#8134af] border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5" 
+              data-testid="footer-instagram"
+            >
+              <Instagram size={17} />
+            </a>
           </div>
         </div>
       </footer>
