@@ -12,7 +12,13 @@ async function bundle() {
     bundle: true,
     platform: "node",
     format: "esm",
-    packages: "external",
+    external: [
+      "express",
+      "cors",
+      "pino",
+      "pino-http",
+      "cookie-parser"
+    ],
     outfile: path.resolve(rootDir, "api/index.js"),
     logLevel: "info",
   });
