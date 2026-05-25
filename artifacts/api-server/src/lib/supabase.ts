@@ -23,29 +23,19 @@ type ParticipantRow = {
   is_used: boolean;
 };
 
+const baseUrl = (process.env.SUPABASE_URL || "https://jjxukcedpahluizzeyge.supabase.co").replace(/\/+$/, "");
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqeHVrY2VkcGFobHVpenpleWdlIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3OTYyNDY0NiwiZXhwIjoyMDk1MjAwNjQ2fQ.OuKJsGIsbsqopjZc-ryvPyrv3ifhjnBCnlwk8HialOo";
+
+const restBaseUrl = `${baseUrl}/rest/v1`;
+const storageBaseUrl = `${baseUrl}/storage/v1`;
+
 const paymentScreenshotBucket = "payment-screenshots";
-
-const baseUrl = (process.env.SUPABASE_URL?.replace(/\/+$/, "") || "") as string;
-const serviceRoleKey = (process.env.SUPABASE_SERVICE_ROLE_KEY || "") as string;
-
-function checkSupabaseEnv() {
-  if (!baseUrl || !serviceRoleKey) {
-    throw new Error(
-      "SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables are missing on Vercel. " +
-      "Please make sure you have added them in your Vercel Project Settings under Environment Variables, and then redeploy."
-    );
-  }
-}
-
-const restBaseUrl = baseUrl ? `${baseUrl}/rest/v1` : "";
-const storageBaseUrl = baseUrl ? `${baseUrl}/storage/v1` : "";
 
 function encodeEq(value: string | number): string {
   return `eq.${encodeURIComponent(String(value))}`;
 }
 
 function headers(prefer?: string): Record<string, string> {
-  checkSupabaseEnv();
   return {
     apikey: serviceRoleKey,
     Authorization: `Bearer ${serviceRoleKey}`,
@@ -88,7 +78,6 @@ async function request<T>(
 }
 
 async function ensureStorageBucket(bucketName: string) {
-  checkSupabaseEnv();
   const lookup = await fetch(`${storageBaseUrl}/bucket/${bucketName}`, {
     headers: {
       apikey: serviceRoleKey,

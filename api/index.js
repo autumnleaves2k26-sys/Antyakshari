@@ -1,8 +1,3 @@
-// artifacts/api-server/src/vercel-entry.ts
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-
 // artifacts/api-server/src/app.ts
 import express from "express";
 import cors from "cors";
@@ -45,23 +40,15 @@ function nanoid(size = 8) {
 }
 
 // artifacts/api-server/src/lib/supabase.ts
+var baseUrl = (process.env.SUPABASE_URL || "https://jjxukcedpahluizzeyge.supabase.co").replace(/\/+$/, "");
+var serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqeHVrY2VkcGFobHVpenpleWdlIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3OTYyNDY0NiwiZXhwIjoyMDk1MjAwNjQ2fQ.OuKJsGIsbsqopjZc-ryvPyrv3ifhjnBCnlwk8HialOo";
+var restBaseUrl = `${baseUrl}/rest/v1`;
+var storageBaseUrl = `${baseUrl}/storage/v1`;
 var paymentScreenshotBucket = "payment-screenshots";
-var baseUrl = process.env.SUPABASE_URL?.replace(/\/+$/, "") || "";
-var serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
-function checkSupabaseEnv() {
-  if (!baseUrl || !serviceRoleKey) {
-    throw new Error(
-      "SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables are missing on Vercel. Please make sure you have added them in your Vercel Project Settings under Environment Variables, and then redeploy."
-    );
-  }
-}
-var restBaseUrl = baseUrl ? `${baseUrl}/rest/v1` : "";
-var storageBaseUrl = baseUrl ? `${baseUrl}/storage/v1` : "";
 function encodeEq(value) {
   return `eq.${encodeURIComponent(String(value))}`;
 }
 function headers(prefer) {
-  checkSupabaseEnv();
   return {
     apikey: serviceRoleKey,
     Authorization: `Bearer ${serviceRoleKey}`,
@@ -69,9 +56,9 @@ function headers(prefer) {
     ...prefer ? { Prefer: prefer } : {}
   };
 }
-async function request(path2, options = {}) {
+async function request(path, options = {}) {
   const { method = "GET", body, prefer } = options;
-  const response = await fetch(`${restBaseUrl}${path2}`, {
+  const response = await fetch(`${restBaseUrl}${path}`, {
     method,
     headers: headers(prefer),
     body: body === void 0 ? void 0 : JSON.stringify(body)
@@ -80,10 +67,10 @@ async function request(path2, options = {}) {
     const text2 = await response.text();
     if (text2.includes("PGRST205")) {
       throw new Error(
-        `Supabase table missing for ${path2}. Create the public.registrations and public.participants tables first (see lib/db/migrations/0001_init.sql). Original error: ${text2}`
+        `Supabase table missing for ${path}. Create the public.registrations and public.participants tables first (see lib/db/migrations/0001_init.sql). Original error: ${text2}`
       );
     }
-    throw new Error(`Supabase REST ${method} ${path2} failed (${response.status}): ${text2}`);
+    throw new Error(`Supabase REST ${method} ${path} failed (${response.status}): ${text2}`);
   }
   if (response.status === 204) {
     return null;
@@ -92,7 +79,6 @@ async function request(path2, options = {}) {
   return text ? JSON.parse(text) : null;
 }
 async function ensureStorageBucket(bucketName) {
-  checkSupabaseEnv();
   const lookup = await fetch(`${storageBaseUrl}/bucket/${bucketName}`, {
     headers: {
       apikey: serviceRoleKey,
@@ -667,26 +653,6 @@ app.use("/api", routes_default);
 var app_default = app;
 
 // artifacts/api-server/src/vercel-entry.ts
-try {
-  const currentDir = path.dirname(fileURLToPath(import.meta.url));
-  const envPath = path.resolve(currentDir, ".env.local");
-  if (fs.existsSync(envPath)) {
-    const content = fs.readFileSync(envPath, "utf-8");
-    for (const line of content.split("\n")) {
-      const trimmed = line.trim();
-      if (!trimmed || trimmed.startsWith("#")) continue;
-      const index = trimmed.indexOf("=");
-      if (index === -1) continue;
-      const key = trimmed.slice(0, index).trim();
-      const val = trimmed.slice(index + 1).trim().replace(/^['"]|['"]$/g, "");
-      if (key && !process.env[key]) {
-        process.env[key] = val;
-      }
-    }
-  }
-} catch (err) {
-  console.error("Failed to load .env.local:", err);
-}
 var vercel_entry_default = app_default;
 export {
   vercel_entry_default as default

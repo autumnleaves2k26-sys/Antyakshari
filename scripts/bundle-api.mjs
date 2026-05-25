@@ -1,7 +1,6 @@
 import { build } from "esbuild";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { copyFile } from "node:fs/promises";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(scriptDir, "..");
@@ -18,10 +17,6 @@ async function bundle() {
     logLevel: "info",
   });
   console.log("Successfully bundled serverless API function to api/index.js!");
-
-  console.log("Copying .env.local to api/.env.local for Vercel packaging...");
-  await copyFile(path.resolve(rootDir, ".env.local"), path.resolve(rootDir, "api/.env.local"));
-  console.log("Successfully copied .env.local!");
 }
 
 bundle().catch((err) => {
