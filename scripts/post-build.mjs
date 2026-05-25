@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const srcDir = path.resolve('artifacts/antyakshari/dist/public');
+const srcDir = path.resolve('artifacts/antyakshari/dist');
 const destDir = path.resolve('dist');
 
 function copyDir(src, dest) {
