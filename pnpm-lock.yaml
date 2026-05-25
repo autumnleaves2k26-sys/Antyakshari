@@ -103,6 +103,9 @@ importers:
       '@types/express':
         specifier: ^5.0.6
         version: 5.0.6
+      esbuild:
+        specifier: 0.27.3
+        version: 0.27.3
       prettier:
         specifier: ^3.8.3
         version: 3.8.3
