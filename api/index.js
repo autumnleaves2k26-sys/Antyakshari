@@ -1,3 +1,7 @@
+// artifacts/api-server/src/vercel-entry.ts
+import fs from "node:fs";
+import path from "node:path";
+
 // artifacts/api-server/src/app.ts
 import express from "express";
 import cors from "cors";
@@ -64,9 +68,9 @@ function headers(prefer) {
     ...prefer ? { Prefer: prefer } : {}
   };
 }
-async function request(path, options = {}) {
+async function request(path2, options = {}) {
   const { method = "GET", body, prefer } = options;
-  const response = await fetch(`${restBaseUrl}${path}`, {
+  const response = await fetch(`${restBaseUrl}${path2}`, {
     method,
     headers: headers(prefer),
     body: body === void 0 ? void 0 : JSON.stringify(body)
@@ -75,10 +79,10 @@ async function request(path, options = {}) {
     const text2 = await response.text();
     if (text2.includes("PGRST205")) {
       throw new Error(
-        `Supabase table missing for ${path}. Create the public.registrations and public.participants tables first (see lib/db/migrations/0001_init.sql). Original error: ${text2}`
+        `Supabase table missing for ${path2}. Create the public.registrations and public.participants tables first (see lib/db/migrations/0001_init.sql). Original error: ${text2}`
       );
     }
-    throw new Error(`Supabase REST ${method} ${path} failed (${response.status}): ${text2}`);
+    throw new Error(`Supabase REST ${method} ${path2} failed (${response.status}): ${text2}`);
   }
   if (response.status === 204) {
     return null;
@@ -662,6 +666,25 @@ app.use("/api", routes_default);
 var app_default = app;
 
 // artifacts/api-server/src/vercel-entry.ts
+try {
+  const envPath = path.resolve(process.cwd(), ".env.local");
+  if (fs.existsSync(envPath)) {
+    const content = fs.readFileSync(envPath, "utf-8");
+    for (const line of content.split("\n")) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith("#")) continue;
+      const index = trimmed.indexOf("=");
+      if (index === -1) continue;
+      const key = trimmed.slice(0, index).trim();
+      const val = trimmed.slice(index + 1).trim().replace(/^['"]|['"]$/g, "");
+      if (key && !process.env[key]) {
+        process.env[key] = val;
+      }
+    }
+  }
+} catch (err) {
+  console.error("Failed to load .env.local:", err);
+}
 var vercel_entry_default = app_default;
 export {
   vercel_entry_default as default
