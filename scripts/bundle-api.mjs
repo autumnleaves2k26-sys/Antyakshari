@@ -1,15 +1,14 @@
 import { build } from "esbuild";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { rm } from "node:fs/promises";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(scriptDir, "..");
 
 async function bundle() {
-  console.log("Bundling api/index.ts to api/index.js...");
+  console.log("Bundling Vercel serverless entrypoint...");
   await build({
-    entryPoints: [path.resolve(rootDir, "api/index.ts")],
+    entryPoints: [path.resolve(rootDir, "artifacts/api-server/src/vercel-entry.ts")],
     bundle: true,
     platform: "node",
     format: "esm",
@@ -17,15 +16,7 @@ async function bundle() {
     outfile: path.resolve(rootDir, "api/index.js"),
     logLevel: "info",
   });
-  console.log("Successfully bundled serverless API function!");
-
-  // On Vercel, delete the original .ts file to force Vercel's builder
-  // to deploy the pre-bundled api/index.js directly, bypassing typescript compilation.
-  if (process.env.VERCEL) {
-    console.log("Vercel deployment environment detected. Cleaning up api/index.ts...");
-    await rm(path.resolve(rootDir, "api/index.ts"), { force: true });
-    console.log("api/index.ts removed successfully.");
-  }
+  console.log("Successfully bundled serverless API function to api/index.js!");
 }
 
 bundle().catch((err) => {
