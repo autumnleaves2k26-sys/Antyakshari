@@ -10,7 +10,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "html5-qrcode": "^2.3.8"
+    "html5-qrcode": "^2.3.8",
+    "qrcode.react": "^4.2.0"
   },
   "devDependencies": {
     "@hookform/resolvers": "^3.10.0",

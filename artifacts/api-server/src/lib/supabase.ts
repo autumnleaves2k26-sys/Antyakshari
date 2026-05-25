@@ -245,30 +245,7 @@ export async function uploadPaymentScreenshotAndUpdateRegistration(input: {
   mimeType: string;
   screenshotData: string;
 }) {
-  await ensureStorageBucket(paymentScreenshotBucket);
-
-  const safeFileName = sanitizeFileName(input.fileName || "payment-screenshot");
-  const objectPath = `${input.bookingId}/${Date.now()}-${safeFileName}`;
-  const uploaded = await fetch(`${storageBaseUrl}/object/${paymentScreenshotBucket}/${objectPath}`,
-    {
-      method: "POST",
-      headers: {
-        apikey: serviceRoleKey,
-        Authorization: `Bearer ${serviceRoleKey}`,
-        "Content-Type": input.mimeType || "application/octet-stream",
-        "x-upsert": "true",
-      },
-      body: decodeDataUrl(input.screenshotData),
-    },
-  );
-
-  if (!uploaded.ok) {
-    const text = await uploaded.text();
-    throw new Error(`Supabase storage upload failed (${uploaded.status}): ${text}`);
-  }
-
-  const publicUrl = `${baseUrl}/storage/v1/object/public/${paymentScreenshotBucket}/${objectPath}`;
-  return updatePaymentScreenshotByBookingId(input.bookingId, publicUrl);
+  return updatePaymentScreenshotByBookingId(input.bookingId, input.screenshotData);
 }
 
 export async function listParticipantsByRegistrationId(registrationId: number) {

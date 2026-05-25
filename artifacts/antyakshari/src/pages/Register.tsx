@@ -11,7 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useCreateRegistration, useUploadPaymentScreenshot } from "@workspace/api-client-react";
-import { QrCode, Upload, ArrowRight, ArrowLeft, CheckCircle2, Users } from "lucide-react";
+import { Upload, ArrowRight, ArrowLeft, CheckCircle2, Users, ExternalLink } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 
 const step1Schema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -358,13 +359,35 @@ export default function Register() {
               {step === 3 && (
                 <motion.div key="step3" initial="enter" animate="center" exit="exit" variants={slide} transition={{ duration: 0.25 }}>
                   <div className="space-y-6">
-                    <div className="bg-muted/40 border border-border rounded-xl p-6 flex flex-col items-center gap-3 text-center">
-                      <QrCode className="w-14 h-14 text-muted-foreground/40" />
-                      <div>
-                        <p className="font-semibold text-foreground text-sm">Scan to Pay</p>
-                        <p className="text-xs text-muted-foreground mt-1">UPI payment details will be shared here</p>
+                    <div className="bg-muted/40 border border-border rounded-xl p-6 flex flex-col items-center gap-4 text-center">
+                      <h3 className="font-semibold text-foreground">Scan to Pay</h3>
+                      <div className="bg-white p-3 rounded-xl shadow-sm border border-border inline-block">
+                        <QRCodeSVG
+                          value={`upi://pay?pa=sadhanait10@oksbi&pn=Antyakshari%20Registration&am=${139 * form1.getValues().totalPasses}&cu=INR`}
+                          size={180}
+                          level="M"
+                          includeMargin={false}
+                        />
                       </div>
-                      <div className="mt-2 px-5 py-2 bg-primary/10 rounded-lg border border-primary/20 text-center">
+                      <div>
+                        <p className="text-xs text-muted-foreground mt-1">UPI ID: <span className="font-mono font-medium text-foreground">sadhanait10@oksbi</span></p>
+                      </div>
+                      
+                      <div className="w-full flex justify-center mt-2 mb-2">
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          className="w-full max-w-[200px]"
+                          onClick={() => {
+                            window.location.href = `upi://pay?pa=sadhanait10@oksbi&pn=Antyakshari%20Registration&am=${139 * form1.getValues().totalPasses}&cu=INR`;
+                          }}
+                        >
+                          <ExternalLink className="mr-2 w-4 h-4" />
+                          Pay with UPI App
+                        </Button>
+                      </div>
+
+                      <div className="mt-1 px-5 py-2 bg-primary/10 w-full rounded-lg border border-primary/20 text-center">
                         <p className="text-xs text-muted-foreground">Amount to pay</p>
                         <p className="font-serif text-2xl font-bold text-primary">₹{139 * form1.getValues().totalPasses}</p>
                         <p className="text-xs text-muted-foreground">{form1.getValues().totalPasses} pass{form1.getValues().totalPasses > 1 ? "es" : ""} × ₹139</p>
