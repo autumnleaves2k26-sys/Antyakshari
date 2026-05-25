@@ -1,8 +1,14 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+<<<<<<< Updated upstream:.migration-backup/scripts/post-build.mjs
 const srcDir = path.resolve('artifacts/antyakshari/dist');
 const destDir = path.resolve('dist');
+=======
+const srcDir = path.resolve('artifacts/antyakshari/dist/public');
+const distDir = path.resolve('dist');
+const publicDir = path.resolve('public');
+>>>>>>> Stashed changes:scripts/post-build.mjs
 
 function copyDir(src, dest) {
   fs.mkdirSync(dest, { recursive: true });
@@ -22,12 +28,19 @@ function copyDir(src, dest) {
 
 try {
   if (fs.existsSync(srcDir)) {
-    console.log(`Copying build output from ${srcDir} to ${destDir}...`);
-    if (fs.existsSync(destDir)) {
-      fs.rmSync(destDir, { recursive: true, force: true });
+    console.log(`Copying build output from ${srcDir} to ${distDir} and ${publicDir}...`);
+    
+    if (fs.existsSync(distDir)) {
+      fs.rmSync(distDir, { recursive: true, force: true });
     }
-    copyDir(srcDir, destDir);
-    console.log('Build output successfully copied to root dist directory!');
+    copyDir(srcDir, distDir);
+    
+    if (fs.existsSync(publicDir)) {
+      fs.rmSync(publicDir, { recursive: true, force: true });
+    }
+    copyDir(srcDir, publicDir);
+    
+    console.log('Build output successfully copied to dist and public directories!');
   } else {
     console.warn(`Source build directory ${srcDir} does not exist. Skipping copy.`);
   }

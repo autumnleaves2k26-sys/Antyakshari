@@ -1,6 +1,13 @@
 {
+<<<<<<< Updated upstream
   "buildCommand": "pnpm run -w vercel-build",
+<<<<<<< HEAD
   "outputDirectory": "dist",
+=======
+  "outputDirectory": "artifacts/antyakshari/dist",
+=======
+>>>>>>> Stashed changes
+>>>>>>> 5c1b311 (Local changes before pulling)
   "rewrites": [
     {
       "source": "/api/(.*)",
