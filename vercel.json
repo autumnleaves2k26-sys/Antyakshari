@@ -3,6 +3,11 @@
   "buildCommand": "pnpm run -w vercel-build",
   "outputDirectory": "dist",
   "framework": null,
+  "functions": {
+    "api/*.js": {
+      "includeFiles": "api/.env.local"
+    }
+  },
   "rewrites": [
     {
       "source": "/api/(.*)",

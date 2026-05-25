@@ -1,9 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-// Dynamically load .env.local if present in the working directory (process.cwd())
+// Dynamically load .env.local if present in the script's directory (same folder as index.js)
 try {
-  const envPath = path.resolve(process.cwd(), ".env.local");
+  const currentDir = path.dirname(fileURLToPath(import.meta.url));
+  const envPath = path.resolve(currentDir, ".env.local");
   if (fs.existsSync(envPath)) {
     const content = fs.readFileSync(envPath, "utf-8");
     for (const line of content.split("\n")) {

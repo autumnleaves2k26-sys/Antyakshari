@@ -1,6 +1,7 @@
 // artifacts/api-server/src/vercel-entry.ts
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 // artifacts/api-server/src/app.ts
 import express from "express";
@@ -667,7 +668,8 @@ var app_default = app;
 
 // artifacts/api-server/src/vercel-entry.ts
 try {
-  const envPath = path.resolve(process.cwd(), ".env.local");
+  const currentDir = path.dirname(fileURLToPath(import.meta.url));
+  const envPath = path.resolve(currentDir, ".env.local");
   if (fs.existsSync(envPath)) {
     const content = fs.readFileSync(envPath, "utf-8");
     for (const line of content.split("\n")) {
